@@ -3,30 +3,34 @@ package com.cretin.cretin.expandabletextview;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.AppCompatTextView;
 import android.text.DynamicLayout;
-import android.text.Html;
 import android.text.Layout;
 import android.text.Selection;
 import android.text.Spannable;
-import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
-import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
 import android.text.method.Touch;
-import android.text.style.CharacterStyle;
 import android.text.style.ClickableSpan;
+import android.text.style.ImageSpan;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * //(int) Math.ceil(StaticLayout.getDesiredWidth(text, mPaint))
@@ -36,35 +40,42 @@ import java.util.Locale;
  */
 
 public class SuperExpandTextView extends AppCompatTextView {
-    private static final int DEF_MAX_LINE = 5;
+    private static final int DEF_MAX_LINE = 4;
     public static final String TEXT_CONTRACT = "收起";
     public static final String TEXT_EXPEND = "展开";
+    public static final String Space = " ";
+    public static final String TEXT_TARGET = "网页链接";
+    public static final String IMAGE_TARGET = "图";
+    public static final String TARGET = IMAGE_TARGET + TEXT_TARGET;
 
+    public static final String regexp = "((http[s]{0,1}|ftp)://[a-zA-Z0-9\\.\\-]+\\.([a-zA-Z]{2,4})(:\\d+)?(/[a-zA-Z0-9\\.\\-~!@#$%^&*+?:_/=<>]*)?)|((www.)|[a-zA-Z0-9\\.\\-]+\\.([a-zA-Z]{2,4})(:\\d+)?(/[a-zA-Z0-9\\.\\-~!@#$%^&*+?:_/=<>]*)?)";
+    public static final String regexp_mention = "@[\\w\\p{InCJKUnifiedIdeographs}-]{1,26}";
+    public static final String regexp_emotion = "\\[(\\S+?)\\]";
     private TextPaint mPaint;
-
-    boolean dontConsumeNonUrlClicks = true;
     boolean linkHit;
+
+    private Context mContext;
 
     /**
      * 计算的layout
      */
     private DynamicLayout mDynamicLayout;
 
-    private CharSequence mContent;
-    private SpannableString mSpannableContent;
-
     //hide状态下，展示多少行开始省略
     private int mLimitLines;
-
 
     private int currentLines;
 
     private int mWidth;
 
+    private Drawable mLinkDrawable = null;
+
     /**
-     * 是否需要收回
+     * 是否需要收起
      */
-    private boolean mNeedContract = true;
+    private boolean mNeedContract = false;
+
+    private FormatData mFormatData;
 
     /**
      * 是否需要展开功能
@@ -77,9 +88,8 @@ public class SuperExpandTextView extends AppCompatTextView {
     private boolean mNeedAnimation = true;
 
     private int mLineCount;
-    private CharacterStyle headerSpan;
-    private int headerIndex;
-    private final String Space = " ";
+
+    private CharSequence mContent;
 
     public SuperExpandTextView(Context context) {
         this(context, null);
@@ -91,11 +101,11 @@ public class SuperExpandTextView extends AppCompatTextView {
 
     public SuperExpandTextView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init(attrs, defStyleAttr);
-        setMovementMethod(SuperExpandTextView.LocalLinkMovementMethod.getInstance());
+        init(context, attrs, defStyleAttr);
+        setMovementMethod(LocalLinkMovementMethod.getInstance());
     }
 
-    private void init(AttributeSet attrs, int defStyleAttr) {
+    private void init(Context context, AttributeSet attrs, int defStyleAttr) {
         if (attrs != null) {
             TypedArray a =
                     getContext().obtainStyledAttributes(attrs, R.styleable.ExpandableTextViewAttr2,
@@ -106,101 +116,47 @@ public class SuperExpandTextView extends AppCompatTextView {
             a.recycle();
         }
 
+        mContext = context;
+
         mPaint = getPaint();
         mPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+
+        //初始化link的图片
+        mLinkDrawable = context.getResources().getDrawable(R.mipmap.link);
+        mLinkDrawable.setBounds(0, 0, 30, 30); //必须设置图片大小，否则不显示
     }
 
-    private CharSequence getRealContent(DynamicLayout dynamicLayout) {
-        //没有 超过limit_line ,直接返回
+    private SpannableStringBuilder setRealContent(CharSequence content) {
+        //处理给定的数据
+        mFormatData = formatData(content);
+
+        mDynamicLayout =
+                new DynamicLayout(mFormatData.formatedContent, mPaint, mWidth, Layout.Alignment.ALIGN_NORMAL, 1f, 0.0f,
+                        true);
+
+        mLineCount = mDynamicLayout.getLineCount();
+
         if (mLineCount <= mLimitLines) {
-            if (mSpannableContent != null)
-                return mSpannableContent;
-            SpannableString result = new SpannableString(mContent);
-            if (headerIndex != 0 && headerIndex <= mContent.length() && headerSpan != null) {
-                result.setSpan(headerSpan, 0, headerIndex, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-            }
-            return result;
-        }
-
-        String text;
-        //如果当前行小于最大行数,这显示隐藏内容，否则显示完全展开内容
-        if (currentLines < mLineCount) {
-            text = getHideString(dynamicLayout);
+            //不需要展开功能 直接处理链接模块
+            return dealLink(mFormatData, false);
         } else {
-            text = getExpandEndContent(dynamicLayout);
+            return dealLink(mFormatData, true);
         }
-
-        SpannableStringBuilder ssb = new SpannableStringBuilder(text);
-        //用ImageSpan替换文本
-        //if (mImageDownSpan != null) {
-        //    ssb.setSpan(mImageDownSpan, text.length() - 2, text.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-        //}
-
-        if (headerIndex != 0 && headerIndex <= text.length() && headerSpan != null) {
-            ssb.setSpan(headerSpan, 0, headerIndex, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-        }
-
-        ssb.setSpan(new ClickableSpan() {
-            @Override
-            public void onClick(View widget) {
-                startClickAnimation();
-            }
-
-            @Override
-            public void updateDrawState(TextPaint ds) {
-                super.updateDrawState(ds);
-                ds.setColor(Color.parseColor("#666666"));
-                ds.setUnderlineText(false);
-            }
-        }, text.length() - 2, text.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-        setMovementMethod(LinkMovementMethod.getInstance());
-        return ssb;
     }
 
-    public void setHeaderSpan(int headerIndex, CharacterStyle headerSpan) {
-        this.headerIndex = headerIndex;
-        this.headerSpan = headerSpan;
-    }
+    public void setContent(String content) {
+        mContent = content;
 
-    @NonNull
-    private String getExpandEndContent(DynamicLayout dynamicLayout) {
-        StringBuilder builder = new StringBuilder(mContent);
-        if (mNeedContract) {
-//            int index = mLineCount - 1;
-
-//            float lineWidth = dynamicLayout.getLineWidth(index);
-//            float lastLineWidth = dynamicLayout.getLineWidth(index - 1);
-
-            String endString = getExpandEndContent();
-//            float endStringWidth = mPaint.measureText(endString);
-
-            //判断最后一行是否放得下,如果放得下，则添加空格，放不下，则换行添加空格
-//            float emptyWidth = lastLineWidth - lineWidth;
-//            if (emptyWidth >= endStringWidth) {
-//                int count = getFitSpaceCount(emptyWidth, endStringWidth);
-//                for (int i = 0; i < count; i++) {
-////                    builder.append(Space);
-//                }
-//            } else {
-//                builder.append("\n");
-//                int count = getFitSpaceCount(lastLineWidth, endStringWidth);
-//                for (int i = 0; i < count; i++) {
-////                    builder.append(Space);
-//                }
-//            }
-
-            builder.append(endString);
+        currentLines = mLimitLines;
+        if (mWidth == 0) {
+            mWidth = getWidth();
         }
-        return builder.toString();
-    }
 
-    private int getFitSpaceCount(float emptyWidth, float endStringWidth) {
-        float measureText = mPaint.measureText(Space);
-        int count = 0;
-        while (endStringWidth + measureText * count < emptyWidth) {
-            count++;
+        if (mWidth == 0) {
+            post(() -> setContent(content));
+        } else {
+            setRealContent(content);
         }
-        return --count;
     }
 
     private String getExpandEndContent() {
@@ -208,103 +164,140 @@ public class SuperExpandTextView extends AppCompatTextView {
                 TEXT_CONTRACT);
     }
 
-    @NonNull
-    private String getHideString(DynamicLayout dynamicLayout) {
-        StringBuilder builder = new StringBuilder();
-        int index = currentLines - 1;
-        int endPosition = dynamicLayout.getLineEnd(index);
-        int startPosition = dynamicLayout.getLineStart(index);
-        float lineWidth = dynamicLayout.getLineWidth(index);
-
-        String endString = getHideEndContent();
-
-        int fitPosition =
-                getFitPosition(endPosition, startPosition, lineWidth, mPaint.measureText(endString), 0);
-
-        builder.append((mSpannableContent == null ? mContent : mSpannableContent).toString().substring(0, fitPosition));
-        builder.append(endString);
-        return builder.toString();
-    }
-
-    private int getFitPosition(int endPosition, int startPosition, float lineWidth,
-                               float endStringWith, float offset) {
-        int position = (int) ((lineWidth - (endStringWith + offset)) * (endPosition - startPosition)
-                / lineWidth);
-
-        if (position < 0) return endPosition;
-
-        float measureText = mPaint.measureText(
-                (mSpannableContent == null ? mContent : mSpannableContent).toString().substring(startPosition, startPosition + position));
-
-        if (measureText <= lineWidth - endStringWith) {
-            return startPosition + position;
-        } else {
-            return getFitPosition(endPosition, startPosition, lineWidth, endStringWith, offset + mPaint.measureText(Space));
-        }
-    }
-
     private String getHideEndContent() {
         return String.format(Locale.getDefault(), "...   %s",
                 TEXT_EXPEND);
     }
 
-    public CharSequence getContent() {
-        return mContent;
-    }
+    /**
+     * 处理文字中的链接问题
+     *
+     * @param formatData
+     * @param ignoreMore
+     */
+    private SpannableStringBuilder dealLink(FormatData formatData, boolean ignoreMore) {
+        SpannableStringBuilder ssb = new SpannableStringBuilder();
+        //处理折叠操作
+        if (ignoreMore) {
+            if (currentLines < mLineCount) {
+                int index = currentLines - 1;
+                int endPosition = mDynamicLayout.getLineEnd(index);
+                int startPosition = mDynamicLayout.getLineStart(index);
+                float lineWidth = mDynamicLayout.getLineWidth(index);
 
-    public void setContent(CharSequence content) {
-        currentLines = mLimitLines;
-        if (mWidth == 0) {
-            mWidth = getWidth();
-        }
+                String endString = getHideEndContent();
 
-        if (mWidth == 0) {
-            post(() -> setContent(content));
+                int fitPosition =
+                        getFitPosition(endPosition, startPosition, lineWidth, mPaint.measureText(endString), 0);
+                ssb.append(formatData.formatedContent.substring(0, fitPosition));
+                ssb.append(endString);
+
+                ssb.setSpan(new ClickableSpan() {
+                    @Override
+                    public void onClick(View widget) {
+                        startClickAnimation();
+                    }
+
+                    @Override
+                    public void updateDrawState(TextPaint ds) {
+                        super.updateDrawState(ds);
+                        ds.setColor(Color.parseColor("#999999"));
+                        ds.setUnderlineText(false);
+                    }
+                }, ssb.length() - TEXT_EXPEND.length(), ssb.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+            } else {
+                ssb.append(formatData.formatedContent);
+                if (mNeedContract) {
+                    String endString = getExpandEndContent();
+                    ssb.append(endString);
+                    ssb.setSpan(new ClickableSpan() {
+                        @Override
+                        public void onClick(View widget) {
+                            startClickAnimation();
+                        }
+
+                        @Override
+                        public void updateDrawState(TextPaint ds) {
+                            super.updateDrawState(ds);
+                            ds.setColor(Color.parseColor("#999999"));
+                            ds.setUnderlineText(false);
+                        }
+                    }, ssb.length() - TEXT_CONTRACT.length(), ssb.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+                }
+            }
         } else {
-            setRealContent(content);
+            ssb.append(formatData.formatedContent);
         }
+        //处理链接的处理
+        List<FormatData.PositionData> positionDatas = formatData.getPositionDatas();
+        HH:
+        for (FormatData.PositionData data : positionDatas) {
+            if (ssb.length() >= data.getEnd()) {
+                if (data.getType() == FormatData.PositionData.TYPE_URL) {
+                    SelfImageSpan imageSpan = new SelfImageSpan(mLinkDrawable, ImageSpan.ALIGN_BASELINE);
+                    //设置链接图标
+                    ssb.setSpan(imageSpan, data.getStart(), data.getStart() + 1, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+                    //设置链接文字样式
+                    ssb.setSpan(new ClickableSpan() {
+                        @Override
+                        public void onClick(View widget) {
+                            Toast.makeText(mContext, data.getStart() + "-" + data.getEnd() + " " + data.getUrl(), Toast.LENGTH_SHORT).show();
+                        }
 
+                        @Override
+                        public void updateDrawState(TextPaint ds) {
+                            ds.setColor(Color.parseColor("#FF6200"));
+                            ds.setUnderlineText(false);
+                        }
+                    }, data.getStart() + 1, data.getEnd(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+                } else {
+                    //关注
+                    ssb.setSpan(new ClickableSpan() {
+                        @Override
+                        public void onClick(View widget) {
+                            Toast.makeText(mContext, data.getStart() + "-" + data.getEnd() + " " + data.getUrl(), Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void updateDrawState(TextPaint ds) {
+                            ds.setColor(Color.parseColor("#FF6200"));
+                            ds.setUnderlineText(false);
+                        }
+                    }, data.getStart(), data.getEnd(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+                }
+            } else {
+                //退出循环
+                break HH;
+            }
+        }
+        addEmotions(ssb);
+        setText(ssb);
         setHighlightColor(Color.TRANSPARENT);
+        return ssb;
     }
 
-    public void setContent(SpannableString content) {
-        currentLines = mLimitLines;
-        if (mWidth == 0) {
-            mWidth = getWidth();
-        }
+    /**
+     * 表情替换
+     *
+     * @param value
+     */
+    private void addEmotions(SpannableStringBuilder value) {
+        Matcher localMatcher = Pattern.compile(regexp_emotion).matcher(value);
+        while (localMatcher.find()) {
+            String str2 = localMatcher.group(0);
+            int k = localMatcher.start();
+            int m = localMatcher.end();
+            if (m - k < 8) {
+                try {
+                    int imageRes = EmoticonsData.getImageResByName(str2);
+                    Drawable drawable = mContext.getResources().getDrawable(imageRes);
+                    drawable.setBounds(0, 0, 60, 60);
+                    ImageSpanAlignCenter imageSpan = new ImageSpanAlignCenter(drawable);
+                    value.setSpan(imageSpan, k, m, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                } catch (Exception e) {
 
-        if (mWidth == 0) {
-            post(() -> setContent(content));
-        } else {
-            setRealContent(content);
-        }
-
-        setHighlightColor(Color.TRANSPARENT);
-    }
-
-    private void setRealContent(CharSequence content) {
-        mContent = content;
-        if (mNeedExpend) {
-            mDynamicLayout =
-                    new DynamicLayout(content, mPaint, mWidth, Layout.Alignment.ALIGN_NORMAL, 1.2f, 0.0f,
-                            true);
-            mLineCount = mDynamicLayout.getLineCount();
-            setText(getRealContent(mDynamicLayout));
-        } else {
-            setText(mContent);
-        }
-    }
-
-    private void setRealContent(SpannableString content) {
-        mSpannableContent = content;
-        if (mNeedExpend) {
-            mDynamicLayout =
-                    new DynamicLayout(content, mPaint, mWidth, Layout.Alignment.ALIGN_NORMAL, 1.2f, 0.0f,
-                            true);
-            mLineCount = mDynamicLayout.getLineCount();
-            setText(getRealContent(mDynamicLayout));
-        } else {
-            setText(mSpannableContent);
+                }
+            }
         }
     }
 
@@ -320,7 +313,7 @@ public class SuperExpandTextView extends AppCompatTextView {
                     if (mNeedContract)
                         currentLines = mLimitLines + (int) ((mLineCount - mLimitLines) * (1 - value));
                 }
-                setText(getRealContent(mDynamicLayout));
+                setText(setRealContent(mContent));
             });
             valueAnimator.setDuration(100);
             valueAnimator.start();
@@ -331,26 +324,162 @@ public class SuperExpandTextView extends AppCompatTextView {
                 if (mNeedContract)
                     currentLines = mLimitLines;
             }
-            setText(getRealContent(mDynamicLayout));
+            setText(setRealContent(mContent));
         }
     }
 
-//    @Override
-//    public boolean onTouchEvent(MotionEvent event) {
-//        linkHit = false;
-//        boolean res = super.onTouchEvent(event);
-//
-//        if (dontConsumeNonUrlClicks)
-//            return linkHit;
-//        return res;
-//
-//    }
+    private int getFitPosition(int endPosition, int startPosition, float lineWidth,
+                               float endStringWith, float offset) {
+        int position = (int) ((lineWidth - (endStringWith + offset)) * (endPosition - startPosition)
+                / lineWidth);
 
-    public void setTextViewHTML(String html) {
-        CharSequence sequence = Html.fromHtml(html);
-        SpannableStringBuilder strBuilder =
-                new SpannableStringBuilder(sequence);
-        setText(strBuilder);
+        if (position < 0) return endPosition;
+
+        float measureText = mPaint.measureText(
+                (mFormatData.formatedContent.substring(startPosition, startPosition + position)));
+
+        if (measureText <= lineWidth - endStringWith) {
+            return startPosition + position;
+        } else {
+            return getFitPosition(endPosition, startPosition, lineWidth, endStringWith, offset + mPaint.measureText(Space));
+        }
+    }
+
+    /**
+     * 对传入的数据进行正则匹配并处理
+     *
+     * @param content
+     * @return
+     */
+    private FormatData formatData(CharSequence content) {
+        FormatData formatData = new FormatData();
+        List<FormatData.PositionData> datas = new ArrayList<>();
+        Pattern pattern = Pattern.compile(regexp, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(content);
+        StringBuffer newResult = new StringBuffer();
+        int start = 0;
+        int end = 0;
+        int temp = 0;
+        while (matcher.find()) {
+            start = matcher.start();
+            end = matcher.end();
+            newResult.append(content.toString().substring(temp, start));
+            datas.add(new FormatData.PositionData(newResult.length() + 1, newResult.length() + 2 + TARGET.length(), matcher.group(), FormatData.PositionData.TYPE_URL));
+            newResult.append(" " + TARGET + " ");
+            temp = end;
+        }
+        newResult.append(content.toString().substring(end, content.toString().length()));
+
+        pattern = Pattern.compile(regexp_mention, Pattern.CASE_INSENSITIVE);
+        matcher = pattern.matcher(newResult.toString());
+        List<FormatData.PositionData> datasMention = new ArrayList<>();
+        while (matcher.find()) {
+            datasMention.add(new FormatData.PositionData(matcher.start(), matcher.end(), matcher.group(), FormatData.PositionData.TYPE_MENTION));
+        }
+        formatData.setFormatedContent(newResult.toString());
+        datas.addAll(0, datasMention);
+        formatData.setPositionDatas(datas);
+        return formatData;
+    }
+
+    static class FormatData {
+        private String formatedContent;
+        private List<PositionData> positionDatas;
+
+        public String getFormatedContent() {
+            return formatedContent;
+        }
+
+        public void setFormatedContent(String formatedContent) {
+            this.formatedContent = formatedContent;
+        }
+
+        public List<PositionData> getPositionDatas() {
+            return positionDatas;
+        }
+
+        public void setPositionDatas(List<PositionData> positionDatas) {
+            this.positionDatas = positionDatas;
+        }
+
+        static class PositionData {
+            public static final int TYPE_URL = 1;
+            public static final int TYPE_MENTION = 2;
+            private int start;
+            private int end;
+            private String url;
+            private int type;
+
+            public int getType() {
+                return type;
+            }
+
+            public void setType(int type) {
+                this.type = type;
+            }
+
+            public String getUrl() {
+                return url;
+            }
+
+            public void setUrl(String url) {
+                this.url = url;
+            }
+
+            public PositionData(int start, int end, String url, int type) {
+                this.start = start;
+                this.end = end;
+                this.url = url;
+                this.type = type;
+            }
+
+            public int getStart() {
+                return start;
+            }
+
+            public void setStart(int start) {
+                this.start = start;
+            }
+
+            public int getEnd() {
+                return end;
+            }
+
+            public void setEnd(int end) {
+                this.end = end;
+            }
+        }
+    }
+
+    class SelfImageSpan extends ImageSpan {
+        private Drawable drawable;
+
+        public SelfImageSpan(Drawable d, int verticalAlignment) {
+            super(d, verticalAlignment);
+            this.drawable = d;
+        }
+
+        @Override
+        public Drawable getDrawable() {
+            return drawable;
+        }
+
+        @Override
+        public void draw(@NonNull Canvas canvas, CharSequence text,
+                         int start, int end, float x,
+                         int top, int y, int bottom, @NonNull Paint paint) {
+            // image to draw
+            Drawable b = getDrawable();
+            // font metrics of text to be replaced
+            Paint.FontMetricsInt fm = paint.getFontMetricsInt();
+            int transY = (y + fm.descent + y + fm.ascent) / 2
+                    - b.getBounds().bottom / 2;
+
+            canvas.save();
+            canvas.translate(x, transY);
+            b.draw(canvas);
+            canvas.restore();
+        }
     }
 
     public static class LocalLinkMovementMethod extends LinkMovementMethod {
@@ -410,27 +539,16 @@ public class SuperExpandTextView extends AppCompatTextView {
         }
     }
 
-    public boolean isNeedContract() {
-        return mNeedContract;
-    }
+    boolean dontConsumeNonUrlClicks = true;
 
-    public void setNeedContract(boolean mNeedContract) {
-        this.mNeedContract = mNeedContract;
-    }
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        linkHit = false;
+        boolean res = super.onTouchEvent(event);
 
-    public boolean isNeedExpend() {
-        return mNeedExpend;
-    }
+        if (dontConsumeNonUrlClicks)
+            return linkHit;
+        return res;
 
-    public void setNeedExpend(boolean mNeedExpend) {
-        this.mNeedExpend = mNeedExpend;
-    }
-
-    public boolean ismNeedAnimation() {
-        return mNeedAnimation;
-    }
-
-    public void setmNeedAnimation(boolean mNeedAnimation) {
-        this.mNeedAnimation = mNeedAnimation;
     }
 }

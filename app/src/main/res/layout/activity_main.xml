@@ -8,12 +8,8 @@
 
     <com.cretin.cretin.expandabletextview.SuperExpandTextView
         android:id="@+id/lorem_ipsum"
-        android:textSize="16sp"
+        android:textSize="14sp"
         android:lineSpacingExtra="4dp"
-        android:layout_marginLeft="15dp"
-        android:layout_marginTop="15dp"
-        android:layout_marginRight="15dp"
-        android:layout_marginBottom="5dp"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" />
 
