@@ -2,12 +2,18 @@ package com.cretin.www.expandabletextview;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.text.util.LinkifyCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.regex.Pattern;
+
+import static com.cretin.www.expandabletextview.BuildConfig.APPLICATION_ID;
 
 /**
  * 联系我：
@@ -30,6 +36,12 @@ public class MainActivity extends AppCompatActivity {
             "3,5;6,9;10,11;14,15;20,21",
             "3,5;6,9;10,11;14,16;21,22",
     };
+
+    public static final String WEB_SCHEME = APPLICATION_ID + ".http://";
+    private String github = "https://github.com/MZCretin/ExpandableTextView";
+    private String blogs = "https://www.jianshu.com/p/b7a8ddc639db";
+    private String contact = "792075028@qq.com";
+    private TextView tvTips00;
 
     private ExpandableTextView.OnLinkClickListener linkClickListener = (type, content) -> {
         if (type.equals(ExpandableTextView.LinkType.LINK_TYPE)) {
@@ -58,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
         tips[3] = findViewById(R.id.tv_tips04);
         tips[4] = findViewById(R.id.tv_tips05);
         tips[5] = findViewById(R.id.tv_tips06);
+        tvTips00 = findViewById(R.id.tv_tips00);
 
         setTips();
 
@@ -88,6 +101,13 @@ public class MainActivity extends AppCompatActivity {
      * 设置tips
      */
     private void setTips() {
+        //处理最上边的Tips
+        final SpannableString value = SpannableString.valueOf(tvTips00.getText());
+        LinkifyCompat.addLinks(value, Pattern
+                .compile(ExpandableTextView.regexp),WEB_SCHEME);
+        tvTips00.setText(value);
+
+        //处理圣剩下的
         for (int i = 0; i < indexs.length; i++) {
             String index = indexs[i];
             TextView view = tips[i];
