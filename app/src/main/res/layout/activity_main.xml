@@ -1,21 +1,176 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context="com.cretin.cretin.expandabletextview.MainActivity">
+    tools:context="com.cretin.www.expandabletextview.MainActivity">
 
-    <com.cretin.cretin.expandabletextview.SuperExpandTextView
-        android:id="@+id/lorem_ipsum"
-        android:textSize="14sp"
-        android:lineSpacingExtra="4dp"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" />
-
-    <TextView
-        android:text="哈哈"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingBottom="100dp">
 
-</LinearLayout>
+        <TextView
+            android:textSize="14sp"
+            android:text="ExpandTextView包含如下功能：\n1、实现类似微博@好友的功能，对@内容进行高亮显示，可以点击\n2、实现链接的高亮显示，可以点击，并且对链接进行原文隐藏\n3、实现内容超过指定行数折叠效果，点击可以展开内容\n4、在原文内容末尾添加指定内容，比如时间串，详情见效果图"
+            android:textColor="#333333"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:lineSpacingExtra="4dp"
+            android:paddingBottom="10dp"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
+            android:paddingTop="10dp" />
+
+        <TextView
+            android:id="@+id/tv_tips01"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#e6e6e6"
+            android:lineSpacingExtra="4dp"
+            android:paddingBottom="10dp"
+            android:paddingLeft="15dp"
+            android:paddingTop="10dp"
+            android:paddingRight="15dp"
+            android:text="1、正常带链接和@用户，没有展开和收回功能"
+            android:textColor="#666666"
+            android:textSize="12sp" />
+
+        <com.cretin.www.expandabletextview.ExpandableTextView
+            android:id="@+id/ep_01"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:lineSpacingExtra="4dp"
+            android:textSize="14sp"
+            app:ep_need_expand="false" />
+
+        <TextView
+            android:id="@+id/tv_tips02"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#e6e6e6"
+            android:paddingRight="15dp"
+            android:lineSpacingExtra="4dp"
+            android:paddingBottom="10dp"
+            android:paddingLeft="15dp"
+            android:paddingTop="10dp"
+            android:text="2、正常带链接和@用户，有展开和收回功能，有切换动画"
+            android:textColor="#666666"
+            android:textSize="12sp" />
+
+        <com.cretin.www.expandabletextview.ExpandableTextView
+            android:id="@+id/ep_02"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:lineSpacingExtra="4dp"
+            android:textSize="14sp"
+            app:ep_max_line="4"
+            app:ep_need_contract="true"
+            app:ep_need_expand="true" />
+
+        <TextView
+            android:id="@+id/tv_tips03"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#e6e6e6"
+            android:paddingRight="15dp"
+            android:lineSpacingExtra="4dp"
+            android:paddingBottom="10dp"
+            android:paddingLeft="15dp"
+            android:paddingTop="10dp"
+            android:text="3、正常带链接和@用户，有展开和收回功能，没有切换动画"
+            android:textColor="#666666"
+            android:textSize="12sp" />
+
+        <com.cretin.www.expandabletextview.ExpandableTextView
+            android:id="@+id/ep_03"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:lineSpacingExtra="4dp"
+            android:textSize="14sp"
+            app:ep_max_line="4"
+            app:ep_need_contract="true"
+            app:ep_need_expand="true" />
+
+        <TextView
+            android:id="@+id/tv_tips04"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingRight="15dp"
+            android:background="#e6e6e6"
+            android:lineSpacingExtra="4dp"
+            android:paddingBottom="10dp"
+            android:paddingLeft="15dp"
+            android:paddingTop="10dp"
+            android:text="4、正常带链接和@用户，有展开，没有收回功能"
+            android:textColor="#666666"
+            android:textSize="12sp" />
+
+        <com.cretin.www.expandabletextview.ExpandableTextView
+            android:id="@+id/ep_04"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:lineSpacingExtra="5dp"
+            android:textSize="14sp"
+            app:ep_max_line="5"
+            app:ep_need_contract="true"
+            app:ep_need_expand="true" />
+
+        <TextView
+            android:id="@+id/tv_tips05"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#e6e6e6"
+            android:lineSpacingExtra="4dp"
+            android:paddingRight="15dp"
+            android:paddingBottom="10dp"
+            android:paddingLeft="15dp"
+            android:paddingTop="10dp"
+            android:text="5、正常带链接和@用户，有展开，有收回功能，带附加内容(比如时间)"
+            android:textColor="#666666"
+            android:textSize="12sp" />
+
+        <com.cretin.www.expandabletextview.ExpandableTextView
+            android:id="@+id/ep_05"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:lineSpacingExtra="4dp"
+            android:textSize="14sp"
+            app:ep_max_line="4"
+            app:ep_need_contract="true"
+            app:ep_need_expand="true" />
+
+        <TextView
+            android:id="@+id/tv_tips06"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#e6e6e6"
+            android:lineSpacingExtra="4dp"
+            android:paddingBottom="10dp"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
+            android:paddingTop="10dp"
+            android:text="6、正常带链接和@用户，有展开，没有收回功能，带附加内容(比如时间)"
+            android:textColor="#666666"
+            android:textSize="12sp" />
+
+        <com.cretin.www.expandabletextview.ExpandableTextView
+            android:id="@+id/ep_06"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:lineSpacingExtra="5dp"
+            android:textSize="14sp"
+            app:ep_max_line="4"
+            app:ep_need_contract="false"
+            app:ep_need_expand="true" />
+
+    </LinearLayout>
+</ScrollView>
