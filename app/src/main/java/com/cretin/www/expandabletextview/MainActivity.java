@@ -7,13 +7,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
+import android.text.method.LinkMovementMethod;
 import android.text.style.ForegroundColorSpan;
+import android.text.util.Linkify;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.regex.Pattern;
 
-import static com.cretin.www.expandabletextview.BuildConfig.APPLICATION_ID;
 
 /**
  * 联系我：
@@ -37,7 +38,6 @@ public class MainActivity extends AppCompatActivity {
             "3,5;6,9;10,11;14,16;21,22",
     };
 
-    public static final String WEB_SCHEME = APPLICATION_ID + ".http://";
     private String github = "https://github.com/MZCretin/ExpandableTextView";
     private String blogs = "https://www.jianshu.com/p/b7a8ddc639db";
     private String contact = "792075028@qq.com";
@@ -94,7 +94,6 @@ public class MainActivity extends AppCompatActivity {
         views[5].setContent(yourText);
         views[5].setEndExpendContent(" 1小时前");
         views[5].setLinkClickListener(linkClickListener);
-
     }
 
     /**
@@ -103,8 +102,8 @@ public class MainActivity extends AppCompatActivity {
     private void setTips() {
         //处理最上边的Tips
         final SpannableString value = SpannableString.valueOf(tvTips00.getText());
-        LinkifyCompat.addLinks(value, Pattern
-                .compile(ExpandableTextView.regexp),WEB_SCHEME);
+        LinkifyCompat.addLinks(value, Linkify.ALL);
+        tvTips00.setMovementMethod(LinkMovementMethod.getInstance());
         tvTips00.setText(value);
 
         //处理圣剩下的
