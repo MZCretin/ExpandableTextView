@@ -1,4 +1,4 @@
-package com.cretin.www.expandabletextview;
+package com.ctetin.expandabletextviewlibrary;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
@@ -669,12 +669,12 @@ public class ExpandableTextView extends AppCompatTextView {
         return res;
     }
 
-    interface OnLinkClickListener {
+    public interface OnLinkClickListener {
         void onLinkClickListener(LinkType type, String content);
     }
 
     //定义类型的枚举类型
-    enum LinkType {
+    public enum LinkType {
         //普通链接
         LINK_TYPE,
         //@用户
