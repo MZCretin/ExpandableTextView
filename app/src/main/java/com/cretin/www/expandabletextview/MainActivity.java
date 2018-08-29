@@ -1,6 +1,8 @@
 package com.cretin.www.expandabletextview;
 
+import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.text.util.LinkifyCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -10,6 +12,7 @@ import android.text.SpannableStringBuilder;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ForegroundColorSpan;
 import android.text.util.Linkify;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,16 +43,13 @@ public class MainActivity extends AppCompatActivity {
             "3,5;6,9;10,11;14,16;21,22",
     };
 
-    private String github = "https://github.com/MZCretin/ExpandableTextView";
-    private String blogs = "https://www.jianshu.com/p/b7a8ddc639db";
-    private String contact = "792075028@qq.com";
     private TextView tvTips00;
 
     private ExpandableTextView.OnLinkClickListener linkClickListener = (type, content) -> {
         if (type.equals(ExpandableTextView.LinkType.LINK_TYPE)) {
-            Toast.makeText(MainActivity.this, "你点击了链接 " + content, Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.this, "你点击了链接 内容是：" + content, Toast.LENGTH_SHORT).show();
         } else if (type.equals(ExpandableTextView.LinkType.MENTION_TYPE)) {
-            Toast.makeText(MainActivity.this, "你点击了@用户 " + content, Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.this, "你点击了@用户 内容是：" + content, Toast.LENGTH_SHORT).show();
         }
     };
 
@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
 
         setTips();
 
-        String yourText = "  hello...world  我所认识的中国，强大、友好。@奥特曼 “一带一路”经济带带动了沿线国家的经济发展，促进我国与他国的友好往来和贸易发展，可谓“双赢”。http://www.baidu.com 自古以来，中国以和平、友好的面孔示人。汉武帝派张骞出使西域，开辟丝绸之路，增进与西域各国的友好往来。http://www.baidu.com 胡麻、胡豆、香料等食材也随之传入中国，汇集于中华美食。@RNG 漠漠古道，驼铃阵阵，这条路奠定了“一带一路”的基础，让世界认识了中国。";
+        String yourText = "  我所认识的中国，强大、友好。@奥特曼 “一带一路”经济带带动了沿线国家的经济发展，促进我国与他国的友好往来和贸易发展，可谓“双赢”。http://www.baidu.com 自古以来，中国以和平、友好的面孔示人。汉武帝派张骞出使西域，开辟丝绸之路，增进与西域各国的友好往来。http://www.baidu.com 胡麻、胡豆、香料等食材也随之传入中国，汇集于中华美食。@RNG 漠漠古道，驼铃阵阵，这条路奠定了“一带一路”的基础，让世界认识了中国。";
         views[0].setContent(yourText);
         views[0].setLinkClickListener(linkClickListener);
 
@@ -96,6 +96,12 @@ public class MainActivity extends AppCompatActivity {
         views[5].setContent(yourText);
         views[5].setEndExpendContent(" 1小时前");
         views[5].setLinkClickListener(linkClickListener);
+
+        findViewById(R.id.ll_ad).setOnClickListener(v -> {
+            Uri uri = Uri.parse("http://a.app.qq.com/o/simple.jsp?pkgname=com.cretin");
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+            startActivity(intent);
+        });
     }
 
     /**
