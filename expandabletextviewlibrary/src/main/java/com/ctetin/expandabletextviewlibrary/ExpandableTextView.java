@@ -22,6 +22,7 @@ import android.text.method.Touch;
 import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.ImageSpan;
+import android.text.util.Linkify;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -32,6 +33,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static android.support.v4.util.PatternsCompat.AUTOLINK_WEB_URL;
 
 /**
  * @date: on 2018-08-24
@@ -47,8 +50,12 @@ public class ExpandableTextView extends AppCompatTextView {
     public static final String TEXT_TARGET = "网页链接";
     public static final String IMAGE_TARGET = "图";
     public static final String TARGET = IMAGE_TARGET + TEXT_TARGET;
+    /**
+     * http?://([-\\w\\.]+)+(:\\d+)?(/([\\w/_\\.]*(\\?\\S+)?)?)?
+     */
 
-    public static final String regexp = "((http[s]{0,1}|ftp)://[a-zA-Z0-9\\.\\-]+\\.([a-zA-Z]{2,4})(:\\d+)?(/[a-zA-Z0-9\\.\\-~!@#$%^&*+?:_/=<>]*)?)|((www.)|[a-zA-Z0-9\\.\\-]+\\.([a-zA-Z]{2,4})(:\\d+)?(/[a-zA-Z0-9\\.\\-~!@#$%^&*+?:_/=<>]*)?)";
+//    public static final String regexp = "((http[s]{0,1}|ftp)://[a-zA-Z0-9\\.\\-]+\\.([a-zA-Z]{2,4})(:\\d+)?(/[a-zA-Z0-9\\.\\-~!@#$%^&*+?:_/=<>]*)?)|((www.)|[a-zA-Z0-9\\.\\-]+\\.([a-zA-Z]{2,4})(:\\d+)?(/[a-zA-Z0-9\\.\\-~!@#$%^&*+?:_/=<>]*)?)";
+    public static final String regexp = "http?://([-\\w\\.]+)+(:\\d+)?(/([\\w/_\\.]*(\\?\\S+)?)?)?";
 
     public static final String regexp_mention = "@[\\w\\p{InCJKUnifiedIdeographs}-]{1,26}";
 
@@ -144,6 +151,8 @@ public class ExpandableTextView extends AppCompatTextView {
         super(context, attrs, defStyleAttr);
         init(context, attrs, defStyleAttr);
         setMovementMethod(LocalLinkMovementMethod.getInstance());
+
+        Linkify.addLinks(this, Linkify.WEB_URLS);
     }
 
     private void init(Context context, AttributeSet attrs, int defStyleAttr) {
@@ -188,7 +197,7 @@ public class ExpandableTextView extends AppCompatTextView {
         mFormatData = formatData(content);
         //用来计算内容的大小
         mDynamicLayout =
-                new DynamicLayout(mFormatData.formatedContent, mPaint, mWidth, Layout.Alignment.ALIGN_NORMAL, 1f, 0.0f,
+                new DynamicLayout(mFormatData.formatedContent, mPaint, mWidth, Layout.Alignment.ALIGN_NORMAL, 1.2f, 0.0f,
                         true);
         //获取行数
         mLineCount = mDynamicLayout.getLineCount();
@@ -342,53 +351,40 @@ public class ExpandableTextView extends AppCompatTextView {
         for (FormatData.PositionData data : positionDatas) {
             if (ssb.length() >= data.getEnd()) {
                 if (data.getType().equals(LinkType.LINK_TYPE)) {
-                    int fitPosition = ssb.length() - getHideEndContent().length();
-                    if (data.getStart() < fitPosition) {
+                    if (mNeedExpend && ignoreMore) {
+                        int fitPosition = ssb.length() - getHideEndContent().length();
+                        if (data.getStart() < fitPosition) {
+                            SelfImageSpan imageSpan = new SelfImageSpan(mLinkDrawable, ImageSpan.ALIGN_BASELINE);
+                            //设置链接图标
+                            ssb.setSpan(imageSpan, data.getStart(), data.getStart() + 1, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+                            //设置链接文字样式
+                            int endPosition = data.getEnd();
+                            if (fitPosition > data.getStart() + 1 && fitPosition < data.getEnd()) {
+                                endPosition = fitPosition;
+                            }
+                            if (data.getStart() + 1 < fitPosition) {
+                                addUrl(ssb, data, endPosition);
+                            }
+                        }
+                    } else {
                         SelfImageSpan imageSpan = new SelfImageSpan(mLinkDrawable, ImageSpan.ALIGN_BASELINE);
                         //设置链接图标
                         ssb.setSpan(imageSpan, data.getStart(), data.getStart() + 1, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
-                        //设置链接文字样式
-                        int endPosition = data.getEnd();
-                        if (fitPosition > data.getStart() + 1 && fitPosition < data.getEnd()) {
-                            endPosition = fitPosition;
-                        }
-                        if (data.getStart() + 1 < fitPosition) {
-                            ssb.setSpan(new ClickableSpan() {
-                                @Override
-                                public void onClick(View widget) {
-                                    if (linkClickListener != null)
-                                        linkClickListener.onLinkClickListener(LinkType.LINK_TYPE, data.getUrl());
-                                }
-
-                                @Override
-                                public void updateDrawState(TextPaint ds) {
-                                    ds.setColor(mLinkTextColor);
-                                    ds.setUnderlineText(false);
-                                }
-                            }, data.getStart() + 1, endPosition, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-                        }
+                        addUrl(ssb, data, data.getEnd());
                     }
                 } else {
-                    int fitPosition = ssb.length() - getHideEndContent().length();
-                    if (data.getStart() < fitPosition) {
-                        int endPosition = data.getEnd();
-                        if (fitPosition < data.getEnd()) {
-                            endPosition = fitPosition;
+                    //如果需要展开
+                    if (mNeedExpend && ignoreMore) {
+                        int fitPosition = ssb.length() - getHideEndContent().length();
+                        if (data.getStart() < fitPosition) {
+                            int endPosition = data.getEnd();
+                            if (fitPosition < data.getEnd()) {
+                                endPosition = fitPosition;
+                            }
+                            addMention(ssb, data, endPosition);
                         }
-                        //关注
-                        ssb.setSpan(new ClickableSpan() {
-                            @Override
-                            public void onClick(View widget) {
-                                if (linkClickListener != null)
-                                    linkClickListener.onLinkClickListener(LinkType.MENTION_TYPE, data.getUrl());
-                            }
-
-                            @Override
-                            public void updateDrawState(TextPaint ds) {
-                                ds.setColor(mLinkTextColor);
-                                ds.setUnderlineText(false);
-                            }
-                        }, data.getStart(), endPosition, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+                    } else {
+                        addMention(ssb, data, data.getEnd());
                     }
                 }
             }
@@ -398,6 +394,53 @@ public class ExpandableTextView extends AppCompatTextView {
         //清除链接点击时背景效果
         setHighlightColor(Color.TRANSPARENT);
         return ssb;
+    }
+
+
+    /**
+     * 添加@用户的Span
+     *
+     * @param ssb
+     * @param data
+     * @param endPosition
+     */
+    private void addMention(SpannableStringBuilder ssb, FormatData.PositionData data, int endPosition) {
+        ssb.setSpan(new ClickableSpan() {
+            @Override
+            public void onClick(View widget) {
+                if (linkClickListener != null)
+                    linkClickListener.onLinkClickListener(LinkType.MENTION_TYPE, data.getUrl());
+            }
+
+            @Override
+            public void updateDrawState(TextPaint ds) {
+                ds.setColor(mLinkTextColor);
+                ds.setUnderlineText(false);
+            }
+        }, data.getStart(), endPosition, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+    }
+
+    /**
+     * 添加链接的span
+     *
+     * @param ssb
+     * @param data
+     * @param endPosition
+     */
+    private void addUrl(SpannableStringBuilder ssb, FormatData.PositionData data, int endPosition) {
+        ssb.setSpan(new ClickableSpan() {
+            @Override
+            public void onClick(View widget) {
+                if (linkClickListener != null)
+                    linkClickListener.onLinkClickListener(LinkType.LINK_TYPE, data.getUrl());
+            }
+
+            @Override
+            public void updateDrawState(TextPaint ds) {
+                ds.setColor(mLinkTextColor);
+                ds.setUnderlineText(false);
+            }
+        }, data.getStart() + 1, endPosition, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
     }
 
     /**
@@ -467,7 +510,8 @@ public class ExpandableTextView extends AppCompatTextView {
         FormatData formatData = new FormatData();
         List<FormatData.PositionData> datas = new ArrayList<>();
         //对链接进行正则匹配
-        Pattern pattern = Pattern.compile(regexp, Pattern.CASE_INSENSITIVE);
+//        Pattern pattern = Pattern.compile(regexp, Pattern.CASE_INSENSITIVE);
+        Pattern pattern = AUTOLINK_WEB_URL;
         Matcher matcher = pattern.matcher(content);
         StringBuffer newResult = new StringBuffer();
         int start = 0;
