@@ -28,6 +28,10 @@
  	}
  ```
 
+### demo下载
+
+[Demo下载](https://raw.githubusercontent.com/MZCretin/ExpandableTextView/master/extra/demo.apk)
+
 ### 代码说明
 
 + 以下属性都可以在xml中设置
