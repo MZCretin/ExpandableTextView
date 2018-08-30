@@ -10,20 +10,20 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:paddingBottom="100dp">
+        android:paddingBottom="5dp">
 
         <TextView
             android:id="@+id/tv_tips00"
-            android:textSize="14sp"
-            android:text="ExpandTextView包含如下功能：\n1、实现类似微博@好友的功能，对@内容进行高亮显示，可以点击\n2、实现链接的高亮显示，可以点击，并且对链接进行原文隐藏\n3、实现内容超过指定行数折叠效果，点击可以展开内容\n4、在原文内容末尾添加指定内容，比如时间串，详情见效果图\n\n联系我：\n792075058@qq.com\n\n博客地址：\nhttps://www.jianshu.com/p/b7a8ddc639db\n\nGithub地址(您的star是对我最大的鼓励)：\nhttps://github.com/MZCretin/ExpandableTextView\n\n"
-            android:textColor="#333333"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:lineSpacingExtra="4dp"
             android:paddingBottom="10dp"
             android:paddingLeft="15dp"
             android:paddingRight="15dp"
-            android:paddingTop="10dp" />
+            android:paddingTop="10dp"
+            android:text="ExpandTextView包含如下功能：\n1、实现类似微博@好友的功能，对@内容进行高亮显示，可以点击\n2、实现链接的高亮显示，可以点击，并且对链接进行原文隐藏\n3、实现内容超过指定行数折叠效果，点击可以展开内容\n4、在原文内容末尾添加指定内容，比如时间串，详情见效果图\n\n联系我：\n792075058@qq.com\n\n博客地址：\nhttps://www.jianshu.com/p/5519fbab6907\n\nGithub地址(您的star是对我最大的鼓励)：\nhttps://github.com/MZCretin/ExpandableTextView\n\n"
+            android:textColor="#333333"
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/tv_tips01"
@@ -33,8 +33,8 @@
             android:lineSpacingExtra="4dp"
             android:paddingBottom="10dp"
             android:paddingLeft="15dp"
-            android:paddingTop="10dp"
             android:paddingRight="15dp"
+            android:paddingTop="10dp"
             android:text="1、正常带链接和@用户，没有展开和收回功能"
             android:textColor="#666666"
             android:textSize="12sp" />
@@ -53,10 +53,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#e6e6e6"
-            android:paddingRight="15dp"
             android:lineSpacingExtra="4dp"
             android:paddingBottom="10dp"
             android:paddingLeft="15dp"
+            android:paddingRight="15dp"
             android:paddingTop="10dp"
             android:text="2、正常带链接和@用户，有展开和收回功能，有切换动画"
             android:textColor="#666666"
@@ -78,10 +78,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#e6e6e6"
-            android:paddingRight="15dp"
             android:lineSpacingExtra="4dp"
             android:paddingBottom="10dp"
             android:paddingLeft="15dp"
+            android:paddingRight="15dp"
             android:paddingTop="10dp"
             android:text="3、正常带链接和@用户，有展开和收回功能，没有切换动画"
             android:textColor="#666666"
@@ -102,11 +102,11 @@
             android:id="@+id/tv_tips04"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingRight="15dp"
             android:background="#e6e6e6"
             android:lineSpacingExtra="4dp"
             android:paddingBottom="10dp"
             android:paddingLeft="15dp"
+            android:paddingRight="15dp"
             android:paddingTop="10dp"
             android:text="4、正常带链接和@用户，有展开，没有收回功能"
             android:textColor="#666666"
@@ -129,9 +129,9 @@
             android:layout_height="wrap_content"
             android:background="#e6e6e6"
             android:lineSpacingExtra="4dp"
-            android:paddingRight="15dp"
             android:paddingBottom="10dp"
             android:paddingLeft="15dp"
+            android:paddingRight="15dp"
             android:paddingTop="10dp"
             android:text="5、正常带链接和@用户，有展开，有收回功能，带附加内容(比如时间)"
             android:textColor="#666666"
@@ -172,6 +172,44 @@
             app:ep_max_line="4"
             app:ep_need_contract="false"
             app:ep_need_expand="true" />
+
+        <LinearLayout
+            android:id="@+id/ll_ad"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="15dp">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/icon" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="10dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="这是一条广告"
+                    android:textColor="#333333"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="《段子乐》是一款集视频，趣图，段子于一身的社区APP"
+                    android:textColor="#666666"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+
+        </LinearLayout>
 
     </LinearLayout>
 </ScrollView>
