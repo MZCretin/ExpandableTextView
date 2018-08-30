@@ -485,14 +485,17 @@ public class ExpandableTextView extends AppCompatTextView {
      */
     private int getFitPosition(int endPosition, int startPosition, float lineWidth,
                                float endStringWith, float offset) {
+        //最后一行需要添加的文字的字数
         int position = (int) ((lineWidth - (endStringWith + offset)) * (endPosition - startPosition)
                 / lineWidth);
 
         if (position < 0) return endPosition;
 
+        //计算最后一行需要显示的正文的长度
         float measureText = mPaint.measureText(
                 (mFormatData.formatedContent.substring(startPosition, startPosition + position)));
 
+        //如果最后一行需要显示的正文的长度比最后一行的长减去“展开”文字的长度要短就可以了  否则加个空格继续算
         if (measureText <= lineWidth - endStringWith) {
             return startPosition + position;
         } else {
