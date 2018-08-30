@@ -345,7 +345,7 @@ public class ExpandableTextView extends AppCompatTextView {
                 ssb.setSpan(new ForegroundColorSpan(mEndExpandTextColor), ssb.length() - mEndExpandContent.length(), ssb.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
             }
         }
-        //处理链接的处理
+        //处理链接或者@用户
         List<FormatData.PositionData> positionDatas = formatData.getPositionDatas();
         HH:
         for (FormatData.PositionData data : positionDatas) {
@@ -731,5 +731,133 @@ public class ExpandableTextView extends AppCompatTextView {
 
     public void setLinkClickListener(OnLinkClickListener linkClickListener) {
         this.linkClickListener = linkClickListener;
+    }
+
+    /**
+     * 设置 "展开"
+     *
+     * @param ssb
+     * @param formatData
+     *
+     */
+    private void setExpandSpan(SpannableStringBuilder ssb, FormatData formatData) {
+        int index = currentLines - 1;
+        int endPosition = mDynamicLayout.getLineEnd(index);
+        int startPosition = mDynamicLayout.getLineStart(index);
+        float lineWidth = mDynamicLayout.getLineWidth(index);
+
+        String endString = getHideEndContent();
+
+        //计算原内容被截取的位置下标
+        int fitPosition =
+                getFitPosition(endPosition, startPosition, lineWidth, mPaint.measureText(endString), 0);
+
+        ssb.append(formatData.formatedContent.substring(0, fitPosition));
+
+        //在被截断的文字后面添加 展开 文字
+        ssb.append(endString);
+
+        int expendLength = TextUtils.isEmpty(mEndExpandContent) ? 0 : 2 + mEndExpandContent.length();
+        ssb.setSpan(new ClickableSpan() {
+            @Override
+            public void onClick(View widget) {
+                action();
+            }
+
+            @Override
+            public void updateDrawState(TextPaint ds) {
+                super.updateDrawState(ds);
+                ds.setColor(mExpandTextColor);
+                ds.setUnderlineText(false);
+            }
+        }, ssb.length() - TEXT_EXPEND.length() - expendLength, ssb.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+    }
+
+    public Drawable getmLinkDrawable() {
+        return mLinkDrawable;
+    }
+
+    public void setmLinkDrawable(Drawable mLinkDrawable) {
+        this.mLinkDrawable = mLinkDrawable;
+    }
+
+    public boolean ismNeedContract() {
+        return mNeedContract;
+    }
+
+    public void setmNeedContract(boolean mNeedContract) {
+        this.mNeedContract = mNeedContract;
+    }
+
+    public boolean ismNeedExpend() {
+        return mNeedExpend;
+    }
+
+    public void setmNeedExpend(boolean mNeedExpend) {
+        this.mNeedExpend = mNeedExpend;
+    }
+
+    public boolean ismNeedAnimation() {
+        return mNeedAnimation;
+    }
+
+    public void setmNeedAnimation(boolean mNeedAnimation) {
+        this.mNeedAnimation = mNeedAnimation;
+    }
+
+    public int getmLineCount() {
+        return mLineCount;
+    }
+
+    public void setmLineCount(int mLineCount) {
+        this.mLineCount = mLineCount;
+    }
+
+    public int getmExpandTextColor() {
+        return mExpandTextColor;
+    }
+
+    public void setmExpandTextColor(int mExpandTextColor) {
+        this.mExpandTextColor = mExpandTextColor;
+    }
+
+    public int getmLinkTextColor() {
+        return mLinkTextColor;
+    }
+
+    public void setmLinkTextColor(int mLinkTextColor) {
+        this.mLinkTextColor = mLinkTextColor;
+    }
+
+    public int getmContractTextColor() {
+        return mContractTextColor;
+    }
+
+    public void setmContractTextColor(int mContractTextColor) {
+        this.mContractTextColor = mContractTextColor;
+    }
+
+    public String getmExpandString() {
+        return mExpandString;
+    }
+
+    public void setmExpandString(String mExpandString) {
+        this.mExpandString = mExpandString;
+    }
+
+    public String getmContractString() {
+        return mContractString;
+    }
+
+    public void setmContractString(String mContractString) {
+        this.mContractString = mContractString;
+    }
+
+    public int getmEndExpandTextColor() {
+        return mEndExpandTextColor;
+    }
+
+    public void setmEndExpandTextColor(int mEndExpandTextColor) {
+        this.mEndExpandTextColor = mEndExpandTextColor;
     }
 }

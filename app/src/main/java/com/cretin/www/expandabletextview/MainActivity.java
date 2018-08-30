@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
         tvTips00.setMovementMethod(LinkMovementMethod.getInstance());
         tvTips00.setText(value);
 
-        //处理圣剩下的
+        //处理剩下的
         for (int i = 0; i < indexs.length; i++) {
             String index = indexs[i];
             TextView view = tips[i];

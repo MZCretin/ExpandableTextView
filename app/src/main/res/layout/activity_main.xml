@@ -21,7 +21,7 @@
             android:paddingLeft="15dp"
             android:paddingRight="15dp"
             android:paddingTop="10dp"
-            android:text="ExpandTextView包含如下功能：\n1、实现类似微博@好友的功能，对@内容进行高亮显示，可以点击\n2、实现链接的高亮显示，可以点击，并且对链接进行原文隐藏\n3、实现内容超过指定行数折叠效果，点击可以展开内容\n4、在原文内容末尾添加指定内容，比如时间串，详情见效果图\n\n联系我：\n792075058@qq.com\n\n博客地址：\nhttps://www.jianshu.com/p/b7a8ddc639db\n\nGithub地址(您的star是对我最大的鼓励)：\nhttps://github.com/MZCretin/ExpandableTextView\n\n"
+            android:text="ExpandTextView包含如下功能：\n1、实现类似微博@好友的功能，对@内容进行高亮显示，可以点击\n2、实现链接的高亮显示，可以点击，并且对链接进行原文隐藏\n3、实现内容超过指定行数折叠效果，点击可以展开内容\n4、在原文内容末尾添加指定内容，比如时间串，详情见效果图\n\n联系我：\n792075058@qq.com\n\n博客地址：\nhttps://www.jianshu.com/p/5519fbab6907\n\nGithub地址(您的star是对我最大的鼓励)：\nhttps://github.com/MZCretin/ExpandableTextView\n\n"
             android:textColor="#333333"
             android:textSize="14sp" />
 
