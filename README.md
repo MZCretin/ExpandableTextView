@@ -24,7 +24,7 @@
 
  ```
  dependencies {
- 	        implementation 'com.github.MZCretin:ExpandableTextView:v1.1'
+ 	        implementation 'com.github.MZCretin:ExpandableTextView:v1.2'
  	}
  ```
 
