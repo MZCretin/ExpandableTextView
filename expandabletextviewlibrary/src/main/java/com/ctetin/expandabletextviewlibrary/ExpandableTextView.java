@@ -229,11 +229,11 @@ public class ExpandableTextView extends AppCompatTextView {
 
         currentLines = mLimitLines;
 
-        if (mWidth == 0) {
-            mWidth = getWidth();
+        if (mWidth <= 0) {
+            mWidth = getWidth() - getPaddingLeft() - getPaddingRight();
         }
 
-        if (mWidth == 0) {
+        if (mWidth <= 0) {
             post(() -> setContent(content));
         } else {
             setRealContent(content);
@@ -741,7 +741,6 @@ public class ExpandableTextView extends AppCompatTextView {
      *
      * @param ssb
      * @param formatData
-     *
      */
     private void setExpandSpan(SpannableStringBuilder ssb, FormatData formatData) {
         int index = currentLines - 1;
