@@ -29,7 +29,7 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    //这里使用本地的 如果想设置可以打开自己测试下
-    //    implementation 'com.github.MZCretin:ExpandableTextView:v1.0'
+    //这里使用本地的 如果想设置ke
+  //    implementation 'com.github.MZCretin:ExpandableTextView:v1.0'
     implementation project(':expandabletextviewlibrary')
 }
