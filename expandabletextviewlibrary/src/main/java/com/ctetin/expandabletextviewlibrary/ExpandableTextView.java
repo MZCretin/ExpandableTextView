@@ -291,8 +291,11 @@ public class ExpandableTextView extends AppCompatTextView {
                 //计算原内容被截取的位置下标
                 int fitPosition =
                         getFitPosition(endPosition, startPosition, lineWidth, mPaint.measureText(endString), 0);
-
-                ssb.append(formatData.formatedContent.substring(0, fitPosition));
+                String substring = formatData.formatedContent.substring(0, fitPosition);
+                if (substring.endsWith("\n")) {
+                    substring = substring.substring(0, substring.length() - "\n".length());
+                }
+                ssb.append(substring);
 
                 //在被截断的文字后面添加 展开 文字
                 ssb.append(endString);
@@ -359,8 +362,10 @@ public class ExpandableTextView extends AppCompatTextView {
                             ssb.setSpan(imageSpan, data.getStart(), data.getStart() + 1, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
                             //设置链接文字样式
                             int endPosition = data.getEnd();
-                            if (fitPosition > data.getStart() + 1 && fitPosition < data.getEnd()) {
-                                endPosition = fitPosition;
+                            if (currentLines < mLineCount) {
+                                if (fitPosition > data.getStart() + 1 && fitPosition < data.getEnd()) {
+                                    endPosition = fitPosition;
+                                }
                             }
                             if (data.getStart() + 1 < fitPosition) {
                                 addUrl(ssb, data, endPosition);
@@ -378,8 +383,10 @@ public class ExpandableTextView extends AppCompatTextView {
                         int fitPosition = ssb.length() - getHideEndContent().length();
                         if (data.getStart() < fitPosition) {
                             int endPosition = data.getEnd();
-                            if (fitPosition < data.getEnd()) {
-                                endPosition = fitPosition;
+                            if (currentLines < mLineCount) {
+                                if (fitPosition < data.getEnd()) {
+                                    endPosition = fitPosition;
+                                }
                             }
                             addMention(ssb, data, endPosition);
                         }

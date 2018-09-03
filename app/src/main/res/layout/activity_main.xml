@@ -69,7 +69,7 @@
             android:layout_margin="15dp"
             android:lineSpacingExtra="4dp"
             android:textSize="14sp"
-            app:ep_max_line="4"
+            app:ep_max_line="5"
             app:ep_need_contract="true"
             app:ep_need_expand="true" />
 
@@ -94,7 +94,7 @@
             android:layout_margin="15dp"
             android:lineSpacingExtra="4dp"
             android:textSize="14sp"
-            app:ep_max_line="4"
+            app:ep_max_line="5"
             app:ep_need_contract="true"
             app:ep_need_expand="true" />
 
@@ -144,7 +144,7 @@
             android:layout_margin="15dp"
             android:lineSpacingExtra="4dp"
             android:textSize="14sp"
-            app:ep_max_line="4"
+            app:ep_max_line="5"
             app:ep_need_contract="true"
             app:ep_need_expand="true" />
 
@@ -169,7 +169,7 @@
             android:layout_margin="15dp"
             android:lineSpacingExtra="5dp"
             android:textSize="14sp"
-            app:ep_max_line="4"
+            app:ep_max_line="5"
             app:ep_need_contract="false"
             app:ep_need_expand="true" />
 
@@ -208,8 +208,6 @@
                     android:textSize="12sp" />
             </LinearLayout>
 
-
         </LinearLayout>
-
     </LinearLayout>
 </ScrollView>
