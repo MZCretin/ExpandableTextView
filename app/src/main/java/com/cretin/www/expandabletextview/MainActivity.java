@@ -36,6 +36,8 @@ public class MainActivity extends AppCompatActivity {
     private TextView[] tips;
     private String[] indexs = new String[]{
             "3,5;6,9;10,12",
+            "3,5;6,11;12,13;21,22",
+            "2,6;7,12;13,14;22,23",
             "3,5;6,9;10,11;19,20",
             "3,5;6,9;10,11;19,21",
             "3,5;6,9;10,11;14,16",
@@ -58,26 +60,29 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        views = new ExpandableTextView[6];
-        tips = new TextView[6];
+        views = new ExpandableTextView[8];
+        tips = new TextView[8];
         views[0] = findViewById(R.id.ep_01);
         views[1] = findViewById(R.id.ep_02);
         views[2] = findViewById(R.id.ep_03);
         views[3] = findViewById(R.id.ep_04);
         views[4] = findViewById(R.id.ep_05);
         views[5] = findViewById(R.id.ep_06);
+        views[6] = findViewById(R.id.ep_07);
+        views[7] = findViewById(R.id.ep_08);
         tips[0] = findViewById(R.id.tv_tips01);
         tips[1] = findViewById(R.id.tv_tips02);
         tips[2] = findViewById(R.id.tv_tips03);
         tips[3] = findViewById(R.id.tv_tips04);
         tips[4] = findViewById(R.id.tv_tips05);
         tips[5] = findViewById(R.id.tv_tips06);
+        tips[6] = findViewById(R.id.tv_tips07);
+        tips[7] = findViewById(R.id.tv_tips08);
         tvTips00 = findViewById(R.id.tv_tips00);
 
         setTips();
-        String yourText = "  我所认识的中国，强大、友好。@奥特曼 “一带一路”经济带带动了沿线国家的经济发展，促进我国与他国的友好往来和贸易发展，可谓“双赢”。http://www.baidu.com 自古以来，中国以和平、友好的面孔示人。汉武帝派张骞出使西域，开辟丝绸之路，增进与西域各国的友好往来。http://www.baidu.com 胡麻、胡豆、香料等食材也随之传入中国，汇集于中华美食。@RNG 漠漠古道，驼铃阵阵，这条路奠定了“一带一路”的基础，让世界认识了中国。";
-//
-//   String yourText = "1\n2\n3\n4\n5\n6\n7\n8";
+        String yourText = "    我所认识的中国，强大、友好。@奥特曼 “一带一路”经济带带动了沿线国家的经济发展，促进我国与他国的友好往来和贸易发展，可谓“双赢”。http://www.baidu.com 自古以来，中国以和平、友好的面孔示人。汉武帝派张骞出使西域，开辟丝绸之路，增进与西域各国的友好往来。http://www.baidu.com 胡麻、胡豆、香料等食材也随之传入中国，汇集于中华美食。@RNG 漠漠古道，驼铃阵阵，这条路奠定了“一带一路”的基础，让世界认识了中国。";
+
         views[0].setContent(yourText);
         views[0].setLinkClickListener(linkClickListener);
 
@@ -91,18 +96,30 @@ public class MainActivity extends AppCompatActivity {
         views[3].setLinkClickListener(linkClickListener);
 
         views[4].setContent(yourText);
-        views[4].setEndExpendContent(" 1小时前");
         views[4].setLinkClickListener(linkClickListener);
 
         views[5].setContent(yourText);
-        views[5].setEndExpendContent(" 1小时前");
         views[5].setLinkClickListener(linkClickListener);
+
+        views[6].setContent(yourText);
+        views[6].setEndExpendContent(" 1小时前");
+        views[6].setLinkClickListener(linkClickListener);
+
+        views[7].setContent(yourText);
+        views[7].setEndExpendContent(" 1小时前");
+        views[7].setLinkClickListener(linkClickListener);
+
+        //在RecyclerView中查看效果
+        findViewById(R.id.ll_recyclerview).setOnClickListener(v -> {
+            startActivity(new Intent(this, ShowInRecyclerViewActivity.class));
+        });
 
         findViewById(R.id.ll_ad).setOnClickListener(v -> {
             Uri uri = Uri.parse("http://a.app.qq.com/o/simple.jsp?pkgname=com.cretin");
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
             startActivity(intent);
         });
+
     }
 
     /**

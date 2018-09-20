@@ -2,11 +2,13 @@ package com.ctetin.expandabletextviewlibrary;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.AppCompatTextView;
@@ -22,11 +24,13 @@ import android.text.method.Touch;
 import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.ImageSpan;
-import android.text.util.Linkify;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
+
+import com.ctetin.expandabletextviewlibrary.app.StatusType;
+import com.ctetin.expandabletextviewlibrary.model.ExpandableStatusFix;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,18 +48,22 @@ import static android.support.v4.util.PatternsCompat.AUTOLINK_WEB_URL;
  */
 public class ExpandableTextView extends AppCompatTextView {
     private static final int DEF_MAX_LINE = 4;
-    public static final String TEXT_CONTRACT = "收起";
-    public static final String TEXT_EXPEND = "展开";
+    public static String TEXT_CONTRACT = "收起";
+    public static String TEXT_EXPEND = "展开";
     public static final String Space = " ";
-    public static final String TEXT_TARGET = "网页链接";
+    public static String TEXT_TARGET = "网页链接";
     public static final String IMAGE_TARGET = "图";
     public static final String TARGET = IMAGE_TARGET + TEXT_TARGET;
+    public static final String DEFAULT_CONTENT = "                                                                                                                                                                                                                                                                                                                           ";
+
+    private static int retryTime = 0;
+
     /**
      * http?://([-\\w\\.]+)+(:\\d+)?(/([\\w/_\\.]*(\\?\\S+)?)?)?
      */
 
 //    public static final String regexp = "((http[s]{0,1}|ftp)://[a-zA-Z0-9\\.\\-]+\\.([a-zA-Z]{2,4})(:\\d+)?(/[a-zA-Z0-9\\.\\-~!@#$%^&*+?:_/=<>]*)?)|((www.)|[a-zA-Z0-9\\.\\-]+\\.([a-zA-Z]{2,4})(:\\d+)?(/[a-zA-Z0-9\\.\\-~!@#$%^&*+?:_/=<>]*)?)";
-    public static final String regexp = "http?://([-\\w\\.]+)+(:\\d+)?(/([\\w/_\\.]*(\\?\\S+)?)?)?";
+//    public static final String regexp = "http?://([-\\w\\.]+)+(:\\d+)?(/([\\w/_\\.]*(\\?\\S+)?)?)?";
 
     public static final String regexp_mention = "@[\\w\\p{InCJKUnifiedIdeographs}-]{1,26}";
 
@@ -64,6 +72,11 @@ public class ExpandableTextView extends AppCompatTextView {
     boolean linkHit;
 
     private Context mContext;
+
+    /**
+     * 记录当前的model
+     */
+    private ExpandableStatusFix mModel;
 
     /**
      * 计算的layout
@@ -95,6 +108,17 @@ public class ExpandableTextView extends AppCompatTextView {
      * 是否需要展开功能
      */
     private boolean mNeedExpend = true;
+
+    /**
+     * 是否需要@用户的功能
+     */
+    private boolean mNeedMention = true;
+
+    /**
+     * 是否需要对链接进行处理
+     */
+    private boolean mNeedLink = true;
+
 
     /**
      * 是否需要动画 默认开启动画
@@ -151,8 +175,6 @@ public class ExpandableTextView extends AppCompatTextView {
         super(context, attrs, defStyleAttr);
         init(context, attrs, defStyleAttr);
         setMovementMethod(LocalLinkMovementMethod.getInstance());
-
-        Linkify.addLinks(this, Linkify.WEB_URLS);
     }
 
     private void init(Context context, AttributeSet attrs, int defStyleAttr) {
@@ -165,6 +187,8 @@ public class ExpandableTextView extends AppCompatTextView {
             mNeedExpend = a.getBoolean(R.styleable.ExpandableTextView_ep_need_expand, true);
             mNeedContract = a.getBoolean(R.styleable.ExpandableTextView_ep_need_contract, false);
             mNeedAnimation = a.getBoolean(R.styleable.ExpandableTextView_ep_need_animation, true);
+            mNeedMention = a.getBoolean(R.styleable.ExpandableTextView_ep_need_mention, true);
+            mNeedLink = a.getBoolean(R.styleable.ExpandableTextView_ep_need_link, true);
             mContractString = a.getString(R.styleable.ExpandableTextView_ep_contract_text);
             mExpandString = a.getString(R.styleable.ExpandableTextView_ep_expand_text);
             mExpandTextColor = a.getColor(R.styleable.ExpandableTextView_ep_expand_color,
@@ -182,6 +206,11 @@ public class ExpandableTextView extends AppCompatTextView {
         } else {
             mLinkDrawable = context.getResources().getDrawable(R.mipmap.link);
         }
+
+        //适配英文版
+        TEXT_CONTRACT = context.getString(R.string.social_contract);
+        TEXT_EXPEND = context.getString(R.string.social_expend);
+        TEXT_TARGET = context.getString(R.string.social_text_target);
 
         mContext = context;
 
@@ -224,17 +253,27 @@ public class ExpandableTextView extends AppCompatTextView {
      *
      * @param content
      */
-    public void setContent(String content) {
+    public void setContent(final String content) {
         mContent = content;
 
         currentLines = mLimitLines;
 
         if (mWidth <= 0) {
-            mWidth = getWidth() - getPaddingLeft() - getPaddingRight();
+            if (getWidth() > 0)
+                mWidth = getWidth() - getPaddingLeft() - getPaddingRight();
         }
 
         if (mWidth <= 0) {
-            post(() -> setContent(content));
+            if (retryTime > 10) {
+                setText(DEFAULT_CONTENT);
+            }
+            this.post(new Runnable() {
+                @Override
+                public void run() {
+                    retryTime++;
+                    setContent(content);
+                }
+            });
         } else {
             setRealContent(content);
         }
@@ -278,6 +317,25 @@ public class ExpandableTextView extends AppCompatTextView {
      */
     private SpannableStringBuilder dealLink(FormatData formatData, boolean ignoreMore) {
         SpannableStringBuilder ssb = new SpannableStringBuilder();
+        //获取存储的状态
+        if (mModel != null && mModel.getStatus() != null) {
+            boolean isHide = false;
+            if (mModel.getStatus() != null) {
+                if (mModel.getStatus().equals(StatusType.STATUS_CONTRACT)) {
+                    //收起
+                    isHide = true;
+                } else {
+                    //展开
+                    isHide = false;
+                }
+            }
+            if (isHide) {
+                currentLines = mLimitLines + ((mLineCount - mLimitLines));
+            } else {
+                if (mNeedContract)
+                    currentLines = mLimitLines;
+            }
+        }
         //处理折叠操作
         if (ignoreMore) {
             if (currentLines < mLineCount) {
@@ -304,7 +362,13 @@ public class ExpandableTextView extends AppCompatTextView {
                 ssb.setSpan(new ClickableSpan() {
                     @Override
                     public void onClick(View widget) {
-                        action();
+                        if (mModel != null) {
+                            mModel.setStatus(StatusType.STATUS_CONTRACT);
+                            action(mModel.getStatus());
+
+                        } else {
+                            action();
+                        }
                     }
 
                     @Override
@@ -324,7 +388,12 @@ public class ExpandableTextView extends AppCompatTextView {
                     ssb.setSpan(new ClickableSpan() {
                         @Override
                         public void onClick(View widget) {
-                            action();
+                            if (mModel != null) {
+                                mModel.setStatus(StatusType.STATUS_EXPAND);
+                                action(mModel.getStatus());
+                            } else {
+                                action();
+                            }
                         }
 
                         @Override
@@ -396,10 +465,10 @@ public class ExpandableTextView extends AppCompatTextView {
                 }
             }
         }
-        //将内容设置到控件中
-        setText(ssb);
         //清除链接点击时背景效果
         setHighlightColor(Color.TRANSPARENT);
+        //将内容设置到控件中
+        setText(ssb);
         return ssb;
     }
 
@@ -411,7 +480,7 @@ public class ExpandableTextView extends AppCompatTextView {
      * @param data
      * @param endPosition
      */
-    private void addMention(SpannableStringBuilder ssb, FormatData.PositionData data, int endPosition) {
+    private void addMention(SpannableStringBuilder ssb, final FormatData.PositionData data, int endPosition) {
         ssb.setSpan(new ClickableSpan() {
             @Override
             public void onClick(View widget) {
@@ -434,12 +503,21 @@ public class ExpandableTextView extends AppCompatTextView {
      * @param data
      * @param endPosition
      */
-    private void addUrl(SpannableStringBuilder ssb, FormatData.PositionData data, int endPosition) {
+    private void addUrl(SpannableStringBuilder ssb, final FormatData.PositionData data, int endPosition) {
         ssb.setSpan(new ClickableSpan() {
             @Override
             public void onClick(View widget) {
-                if (linkClickListener != null)
+                if (linkClickListener != null) {
                     linkClickListener.onLinkClickListener(LinkType.LINK_TYPE, data.getUrl());
+                } else {
+                    //如果没有设置监听 则调用默认的打开浏览器显示连接
+                    Intent intent = new Intent();
+                    intent.setAction("android.intent.action.VIEW");
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    Uri url = Uri.parse("http://www.baidu.com");
+                    intent.setData(url);
+                    mContext.startActivity(intent);
+                }
             }
 
             @Override
@@ -451,21 +529,41 @@ public class ExpandableTextView extends AppCompatTextView {
     }
 
     /**
+     * 设置当前的状态
+     *
+     * @param type
+     */
+    public void setCurrStatus(StatusType type) {
+        action(type);
+    }
+
+    private void action() {
+        action(null);
+    }
+
+    /**
      * 执行展开和收回的动作
      */
-    private void action() {
+    private void action(StatusType type) {
         boolean isHide = currentLines < mLineCount;
+        if (type != null) {
+            mNeedAnimation = false;
+        }
         if (mNeedAnimation) {
             ValueAnimator valueAnimator = ValueAnimator.ofFloat(0, 1);
-            valueAnimator.addUpdateListener(animation -> {
-                Float value = (Float) animation.getAnimatedValue();
-                if (isHide) {
-                    currentLines = mLimitLines + (int) ((mLineCount - mLimitLines) * value);
-                } else {
-                    if (mNeedContract)
-                        currentLines = mLimitLines + (int) ((mLineCount - mLimitLines) * (1 - value));
+            final boolean finalIsHide = isHide;
+            valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator animation) {
+                    Float value = (Float) animation.getAnimatedValue();
+                    if (finalIsHide) {
+                        currentLines = mLimitLines + (int) ((mLineCount - mLimitLines) * value);
+                    } else {
+                        if (mNeedContract)
+                            currentLines = mLimitLines + (int) ((mLineCount - mLimitLines) * (1 - value));
+                    }
+                    setText(setRealContent(mContent));
                 }
-                setText(setRealContent(mContent));
             });
             valueAnimator.setDuration(100);
             valueAnimator.start();
@@ -527,26 +625,30 @@ public class ExpandableTextView extends AppCompatTextView {
         int start = 0;
         int end = 0;
         int temp = 0;
-        while (matcher.find()) {
-            start = matcher.start();
-            end = matcher.end();
-            newResult.append(content.toString().substring(temp, start));
-            //将匹配到的内容进行统计处理
-            datas.add(new FormatData.PositionData(newResult.length() + 1, newResult.length() + 2 + TARGET.length(), matcher.group(), LinkType.LINK_TYPE));
-            newResult.append(" " + TARGET + " ");
-            temp = end;
+        if (mNeedLink) {
+            while (matcher.find()) {
+                start = matcher.start();
+                end = matcher.end();
+                newResult.append(content.toString().substring(temp, start));
+                //将匹配到的内容进行统计处理
+                datas.add(new FormatData.PositionData(newResult.length() + 1, newResult.length() + 2 + TARGET.length(), matcher.group(), LinkType.LINK_TYPE));
+                newResult.append(" " + TARGET + " ");
+                temp = end;
+            }
         }
         newResult.append(content.toString().substring(end, content.toString().length()));
         //对@用户 进行正则匹配
-        pattern = Pattern.compile(regexp_mention, Pattern.CASE_INSENSITIVE);
-        matcher = pattern.matcher(newResult.toString());
-        List<FormatData.PositionData> datasMention = new ArrayList<>();
-        while (matcher.find()) {
-            //将匹配到的内容进行统计处理
-            datasMention.add(new FormatData.PositionData(matcher.start(), matcher.end(), matcher.group(), LinkType.MENTION_TYPE));
+        if (mNeedMention) {
+            pattern = Pattern.compile(regexp_mention, Pattern.CASE_INSENSITIVE);
+            matcher = pattern.matcher(newResult.toString());
+            List<FormatData.PositionData> datasMention = new ArrayList<>();
+            while (matcher.find()) {
+                //将匹配到的内容进行统计处理
+                datasMention.add(new FormatData.PositionData(matcher.start(), matcher.end(), matcher.group(), LinkType.MENTION_TYPE));
+            }
+            datas.addAll(0, datasMention);
         }
         formatData.setFormatedContent(newResult.toString());
-        datas.addAll(0, datasMention);
         formatData.setPositionDatas(datas);
         return formatData;
     }
@@ -654,6 +756,15 @@ public class ExpandableTextView extends AppCompatTextView {
         }
     }
 
+    /**
+     * 绑定状态
+     *
+     * @param model
+     */
+    public void bind(ExpandableStatusFix model) {
+        mModel = model;
+    }
+
     public static class LocalLinkMovementMethod extends LinkMovementMethod {
         static LocalLinkMovementMethod sInstance;
 
@@ -743,130 +854,107 @@ public class ExpandableTextView extends AppCompatTextView {
         this.linkClickListener = linkClickListener;
     }
 
-    /**
-     * 设置 "展开"
-     *
-     * @param ssb
-     * @param formatData
-     */
-    private void setExpandSpan(SpannableStringBuilder ssb, FormatData formatData) {
-        int index = currentLines - 1;
-        int endPosition = mDynamicLayout.getLineEnd(index);
-        int startPosition = mDynamicLayout.getLineStart(index);
-        float lineWidth = mDynamicLayout.getLineWidth(index);
-
-        String endString = getHideEndContent();
-
-        //计算原内容被截取的位置下标
-        int fitPosition =
-                getFitPosition(endPosition, startPosition, lineWidth, mPaint.measureText(endString), 0);
-
-        ssb.append(formatData.formatedContent.substring(0, fitPosition));
-
-        //在被截断的文字后面添加 展开 文字
-        ssb.append(endString);
-
-        int expendLength = TextUtils.isEmpty(mEndExpandContent) ? 0 : 2 + mEndExpandContent.length();
-        ssb.setSpan(new ClickableSpan() {
-            @Override
-            public void onClick(View widget) {
-                action();
-            }
-
-            @Override
-            public void updateDrawState(TextPaint ds) {
-                super.updateDrawState(ds);
-                ds.setColor(mExpandTextColor);
-                ds.setUnderlineText(false);
-            }
-        }, ssb.length() - TEXT_EXPEND.length() - expendLength, ssb.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+    public boolean ismNeedMention() {
+        return mNeedMention;
     }
 
-    public Drawable getmLinkDrawable() {
+    public void setNeedMention(boolean mNeedMention) {
+        this.mNeedMention = mNeedMention;
+    }
+
+    public Drawable getLinkDrawable() {
         return mLinkDrawable;
     }
 
-    public void setmLinkDrawable(Drawable mLinkDrawable) {
+    public void setLinkDrawable(Drawable mLinkDrawable) {
         this.mLinkDrawable = mLinkDrawable;
     }
 
-    public boolean ismNeedContract() {
+    public boolean isNeedContract() {
         return mNeedContract;
     }
 
-    public void setmNeedContract(boolean mNeedContract) {
+    public void setNeedContract(boolean mNeedContract) {
         this.mNeedContract = mNeedContract;
     }
 
-    public boolean ismNeedExpend() {
+    public boolean isNeedExpend() {
         return mNeedExpend;
     }
 
-    public void setmNeedExpend(boolean mNeedExpend) {
+    public void setNeedExpend(boolean mNeedExpend) {
         this.mNeedExpend = mNeedExpend;
     }
 
-    public boolean ismNeedAnimation() {
+    public boolean isNeedAnimation() {
         return mNeedAnimation;
     }
 
-    public void setmNeedAnimation(boolean mNeedAnimation) {
+    public void setNeedAnimation(boolean mNeedAnimation) {
         this.mNeedAnimation = mNeedAnimation;
     }
 
-    public int getmLineCount() {
+    public int getExpandableLineCount() {
         return mLineCount;
     }
 
-    public void setmLineCount(int mLineCount) {
+    public void setExpandableLineCount(int mLineCount) {
         this.mLineCount = mLineCount;
     }
 
-    public int getmExpandTextColor() {
+    public int getExpandTextColor() {
         return mExpandTextColor;
     }
 
-    public void setmExpandTextColor(int mExpandTextColor) {
+    public void setExpandTextColor(int mExpandTextColor) {
         this.mExpandTextColor = mExpandTextColor;
     }
 
-    public int getmLinkTextColor() {
+    public int getExpandableLinkTextColor() {
         return mLinkTextColor;
     }
 
-    public void setmLinkTextColor(int mLinkTextColor) {
+    public void setExpandableLinkTextColor(int mLinkTextColor) {
         this.mLinkTextColor = mLinkTextColor;
     }
 
-    public int getmContractTextColor() {
+    public int getContractTextColor() {
         return mContractTextColor;
     }
 
-    public void setmContractTextColor(int mContractTextColor) {
+    public void setContractTextColor(int mContractTextColor) {
         this.mContractTextColor = mContractTextColor;
     }
 
-    public String getmExpandString() {
+    public String getExpandString() {
         return mExpandString;
     }
 
-    public void setmExpandString(String mExpandString) {
+    public void setExpandString(String mExpandString) {
         this.mExpandString = mExpandString;
     }
 
-    public String getmContractString() {
+    public String getContractString() {
         return mContractString;
     }
 
-    public void setmContractString(String mContractString) {
+    public void setContractString(String mContractString) {
         this.mContractString = mContractString;
     }
 
-    public int getmEndExpandTextColor() {
+    public int getEndExpandTextColor() {
         return mEndExpandTextColor;
     }
 
-    public void setmEndExpandTextColor(int mEndExpandTextColor) {
+    public void setEndExpandTextColor(int mEndExpandTextColor) {
         this.mEndExpandTextColor = mEndExpandTextColor;
+    }
+
+    public boolean isNeedLink() {
+        return mNeedLink;
+    }
+
+    public void setNeedLink(boolean mNeedLink) {
+        this.mNeedLink = mNeedLink;
     }
 }

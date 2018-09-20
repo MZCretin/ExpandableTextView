@@ -6,6 +6,10 @@
         <attr name="ep_need_expand" format="boolean" />
         <!--是否需要收起 这个是建立在开启展开的基础上的-->
         <attr name="ep_need_contract" format="boolean" />
+        <!--是否需要@用户 -->
+        <attr name="ep_need_mention" format="boolean" />
+        <!--是否需要对链接进行处理 -->
+        <attr name="ep_need_link" format="boolean" />
         <!--是否需要动画-->
         <attr name="ep_need_animation" format="boolean" />
         <!--收起的文案-->

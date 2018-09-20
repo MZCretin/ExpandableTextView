@@ -26,6 +26,46 @@
             android:textSize="14sp" />
 
         <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#e6e6e6"
+            android:lineSpacingExtra="4dp"
+            android:paddingBottom="10dp"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
+            android:paddingTop="10dp"
+            android:text="特别：在RecyclerView中的使用(ListView类似)"
+            android:textColor="#666666"
+            android:textSize="12sp" />
+
+        <LinearLayout
+            android:id="@+id/ll_recyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingBottom="20dp"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
+            android:paddingTop="20dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:lineSpacingExtra="4dp"
+                android:text="点击查看在RecyclerView中的使用效果"
+                android:textSize="14sp" />
+
+            <ImageView
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:src="@mipmap/right" />
+
+        </LinearLayout>
+
+
+        <TextView
             android:id="@+id/tv_tips01"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -45,8 +85,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="15dp"
             android:lineSpacingExtra="4dp"
-            android:textSize="14sp"
-            app:ep_need_expand="false" />
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/tv_tips02"
@@ -58,7 +97,7 @@
             android:paddingLeft="15dp"
             android:paddingRight="15dp"
             android:paddingTop="10dp"
-            android:text="2、正常带链接和@用户，有展开和收回功能，有切换动画"
+            android:text="2、正常带链接，不带@用户，有展开和收回功能，有切换动画"
             android:textColor="#666666"
             android:textSize="12sp" />
 
@@ -71,7 +110,8 @@
             android:textSize="14sp"
             app:ep_max_line="5"
             app:ep_need_contract="true"
-            app:ep_need_expand="true" />
+            app:ep_need_expand="true"
+            app:ep_need_mention="false" />
 
         <TextView
             android:id="@+id/tv_tips03"
@@ -83,7 +123,7 @@
             android:paddingLeft="15dp"
             android:paddingRight="15dp"
             android:paddingTop="10dp"
-            android:text="3、正常带链接和@用户，有展开和收回功能，没有切换动画"
+            android:text="3、正常不带链接，不带@用户，有展开和收回功能，有切换动画"
             android:textColor="#666666"
             android:textSize="12sp" />
 
@@ -96,7 +136,9 @@
             android:textSize="14sp"
             app:ep_max_line="5"
             app:ep_need_contract="true"
-            app:ep_need_expand="true" />
+            app:ep_need_expand="true"
+            app:ep_need_link="false"
+            app:ep_need_mention="false" />
 
         <TextView
             android:id="@+id/tv_tips04"
@@ -108,7 +150,7 @@
             android:paddingLeft="15dp"
             android:paddingRight="15dp"
             android:paddingTop="10dp"
-            android:text="4、正常带链接和@用户，有展开，没有收回功能"
+            android:text="4、正常带链接和@用户，有展开和收回功能，有切换动画"
             android:textColor="#666666"
             android:textSize="12sp" />
 
@@ -117,10 +159,10 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_margin="15dp"
-            android:lineSpacingExtra="5dp"
+            android:lineSpacingExtra="4dp"
             android:textSize="14sp"
             app:ep_max_line="5"
-            app:ep_need_contract="false"
+            app:ep_need_contract="true"
             app:ep_need_expand="true" />
 
         <TextView
@@ -133,7 +175,7 @@
             android:paddingLeft="15dp"
             android:paddingRight="15dp"
             android:paddingTop="10dp"
-            android:text="5、正常带链接和@用户，有展开，有收回功能，带附加内容(比如时间)"
+            android:text="5、正常带链接和@用户，有展开和收回功能，没有切换动画"
             android:textColor="#666666"
             android:textSize="12sp" />
 
@@ -158,12 +200,62 @@
             android:paddingLeft="15dp"
             android:paddingRight="15dp"
             android:paddingTop="10dp"
-            android:text="6、正常带链接和@用户，有展开，没有收回功能，带附加内容(比如时间)"
+            android:text="6、正常带链接和@用户，有展开，没有收回功能"
             android:textColor="#666666"
             android:textSize="12sp" />
 
         <com.ctetin.expandabletextviewlibrary.ExpandableTextView
             android:id="@+id/ep_06"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:lineSpacingExtra="5dp"
+            android:textSize="14sp"
+            app:ep_max_line="5"
+            app:ep_need_contract="false"
+            app:ep_need_expand="true" />
+
+        <TextView
+            android:id="@+id/tv_tips07"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#e6e6e6"
+            android:lineSpacingExtra="4dp"
+            android:paddingBottom="10dp"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
+            android:paddingTop="10dp"
+            android:text="7、正常带链接和@用户，有展开，有收回功能，带附加内容(比如时间)"
+            android:textColor="#666666"
+            android:textSize="12sp" />
+
+        <com.ctetin.expandabletextviewlibrary.ExpandableTextView
+            android:id="@+id/ep_07"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:lineSpacingExtra="4dp"
+            android:textSize="14sp"
+            app:ep_max_line="5"
+            app:ep_need_contract="true"
+            app:ep_need_expand="true" />
+
+        <TextView
+            android:id="@+id/tv_tips08"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#e6e6e6"
+            android:lineSpacingExtra="4dp"
+            android:paddingBottom="10dp"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
+            android:paddingTop="10dp"
+            android:text="8、正常带链接和@用户，有展开，没有收回功能，带附加内容(比如时间)"
+            android:textColor="#666666"
+            android:textSize="12sp" />
+
+        <com.ctetin.expandabletextviewlibrary.ExpandableTextView
+            android:id="@+id/ep_08"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_margin="15dp"

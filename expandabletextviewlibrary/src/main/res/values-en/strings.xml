@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">ExpandableTextViewLibrary</string>
+
+    <string name="social_text_target">Website link</string>
+    <string name="social_contract">Fold</string>
+    <string name="social_expend">More</string>
+</resources>
