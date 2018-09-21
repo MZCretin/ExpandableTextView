@@ -93,6 +93,11 @@
         <attr name="ep_link_color" format="color" />
         <!--链接的图标-->
         <attr name="ep_link_res" format="reference" />
+        <!--是否需要对@用户进行识别-->
+        <attr name="ep_need_mention" format="boolean" />
+        <!--是否需要对链接进行识别-->
+        <attr name="ep_need_link" format="boolean" />
+
 
         //布局文件中使用 可选 也可以在代码中设置
         <com.ctetin.expandabletextviewlibrary.ExpandableTextView
