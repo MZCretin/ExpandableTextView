@@ -372,7 +372,6 @@ public class ExpandableTextView extends AppCompatTextView {
                         if (mModel != null) {
                             mModel.setStatus(StatusType.STATUS_CONTRACT);
                             action(mModel.getStatus());
-
                         } else {
                             action();
                         }
@@ -833,11 +832,18 @@ public class ExpandableTextView extends AppCompatTextView {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        int action = event.getAction();
         linkHit = false;
         boolean res = super.onTouchEvent(event);
 
         if (dontConsumeNonUrlClicks)
             return linkHit;
+
+        //防止选择复制的状态不消失
+        if (action == MotionEvent.ACTION_UP) {
+            this.setTextIsSelectable(false);
+        }
+
         return res;
     }
 

@@ -27,9 +27,9 @@ public class ShowInRecyclerViewActivity extends AppCompatActivity {
     private FloatingActionButton floatingActionButton;
 
     //是需要保存展开或收回状态
-    private boolean flag;
+    private boolean flag = true;
 
-    private String yourText = "  我所认识的中国，强大、友好。@奥特曼 “一带一路”经济带带动了沿线国家的经济发展，促进我国与他国的友好往来和贸易发展，可谓“双赢”。http://www.baidu.com 自古以来，中国以和平、友好的面孔示人。汉武帝派张骞出使西域，开辟丝绸之路，增进与西域各国的友好往来。http://www.baidu.com 胡麻、胡豆、香料等食材也随之传入中国，汇集于中华美食。@RNG 漠漠古道，驼铃阵阵，这条路奠定了“一带一路”的基础，让世界认识了中国。";
+    private String yourText = "我所认识的中国，强大、友好。@奥特曼 “一带一路”经济带带动了沿线国家的经济发展，促进我国与他国的友好往来和贸易发展，可谓“双赢”。http://www.baidu.com 自古以来，中国以和平、友好的面孔示人。汉武帝派张骞出使西域，开辟丝绸之路，增进与西域各国的友好往来。http://www.baidu.com 胡麻、胡豆、香料等食材也随之传入中国，汇集于中华美食。@RNG 漠漠古道，驼铃阵阵，这条路奠定了“一带一路”的基础，让世界认识了中国。";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,22 +40,9 @@ public class ShowInRecyclerViewActivity extends AppCompatActivity {
         floatingActionButton = findViewById(R.id.float_btn);
 
         list = new ArrayList<>();
+        changeStateAndSetData();
 
-        for (int i = 0; i < 50; i++) {
-            list.add(new ViewModel(yourText));
-        }
-
-        adapter = new MyRecyclerViewAdapter(this, list);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
-        recyclerView.setAdapter(adapter);
-
-        floatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                changeStateAndSetData();
-            }
-        });
+        floatingActionButton.setOnClickListener(v -> changeStateAndSetData());
     }
 
     /**
@@ -68,15 +55,19 @@ public class ShowInRecyclerViewActivity extends AppCompatActivity {
             Toast.makeText(this, "保留之前的展开或收回状态", Toast.LENGTH_SHORT).show();
             floatingActionButton.setImageResource(R.mipmap.green);
             for (int i = 0; i < 50; i++) {
-                list.add(new ViewModelWithFlag(yourText));
+                list.add(new ViewModelWithFlag("第" + (i + 1) + "条数据：" + yourText));
             }
         } else {
             Toast.makeText(this, "不保留之前的展开或收回状态", Toast.LENGTH_SHORT).show();
             floatingActionButton.setImageResource(R.mipmap.gray);
             for (int i = 0; i < 50; i++) {
-                list.add(new ViewModel(yourText));
+                list.add(new ViewModel("第" + (i + 1) + "条数据：" + yourText));
             }
         }
+        adapter = new MyRecyclerViewAdapter(this, list);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+        recyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
     }
 
@@ -128,6 +119,8 @@ public class ShowInRecyclerViewActivity extends AppCompatActivity {
             private RecyclerHolder(View itemView) {
                 super(itemView);
                 textView = itemView.findViewById(R.id.tv_item);
+                itemView.setOnClickListener(v -> Toast.makeText(
+                        ShowInRecyclerViewActivity.this, "您点击了第" + getLayoutPosition() + "个Item", Toast.LENGTH_SHORT).show());
             }
         }
     }
