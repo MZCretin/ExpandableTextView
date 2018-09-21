@@ -55,11 +55,8 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
+    private void initView(){
         views = new ExpandableTextView[8];
         tips = new TextView[8];
         views[0] = findViewById(R.id.ep_01);
@@ -79,32 +76,48 @@ public class MainActivity extends AppCompatActivity {
         tips[6] = findViewById(R.id.tv_tips07);
         tips[7] = findViewById(R.id.tv_tips08);
         tvTips00 = findViewById(R.id.tv_tips00);
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        initView();
 
         setTips();
         String yourText = "    我所认识的中国，强大、友好。@奥特曼 “一带一路”经济带带动了沿线国家的经济发展，促进我国与他国的友好往来和贸易发展，可谓“双赢”。http://www.baidu.com 自古以来，中国以和平、友好的面孔示人。汉武帝派张骞出使西域，开辟丝绸之路，增进与西域各国的友好往来。http://www.baidu.com 胡麻、胡豆、香料等食材也随之传入中国，汇集于中华美食。@RNG 漠漠古道，驼铃阵阵，这条路奠定了“一带一路”的基础，让世界认识了中国。";
 
+        //1、正常带链接和@用户，没有展开和收回功能
         views[0].setContent(yourText);
         views[0].setLinkClickListener(linkClickListener);
 
+        //2、正常带链接，不带@用户，有展开和收回功能，有切换动画
         views[1].setContent(yourText);
         views[1].setLinkClickListener(linkClickListener);
 
+        //3、正常不带链接，不带@用户，有展开和收回功能，有切换动画
         views[2].setContent(yourText);
         views[2].setLinkClickListener(linkClickListener);
 
+        //4、正常带链接和@用户，有展开和收回功能，有切换动画
         views[3].setContent(yourText);
         views[3].setLinkClickListener(linkClickListener);
 
+        //5、正常带链接和@用户，有展开和收回功能，没有切换动画
         views[4].setContent(yourText);
         views[4].setLinkClickListener(linkClickListener);
 
+        //6、正常带链接和@用户，有展开，没有收回功能
         views[5].setContent(yourText);
         views[5].setLinkClickListener(linkClickListener);
 
+        //7、正常带链接和@用户，有展开，有收回功能，带附加内容(比如时间)
         views[6].setContent(yourText);
         views[6].setEndExpendContent(" 1小时前");
         views[6].setLinkClickListener(linkClickListener);
 
+        //8、正常带链接和@用户，有展开，没有收回功能，带附加内容(比如时间)
         views[7].setContent(yourText);
         views[7].setEndExpendContent(" 1小时前");
         views[7].setLinkClickListener(linkClickListener);
@@ -114,6 +127,7 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(this, ShowInRecyclerViewActivity.class));
         });
 
+        //广告 从后台到app都是我自己一个人开发的 希望得到你的支持
         findViewById(R.id.ll_ad).setOnClickListener(v -> {
             Uri uri = Uri.parse("http://a.app.qq.com/o/simple.jsp?pkgname=com.cretin");
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);

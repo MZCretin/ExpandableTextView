@@ -2,19 +2,30 @@
  **实现类似微博内容，@用户，链接高亮，@用户和链接可点击跳转，可展开和收回的TextView。觉得好用别忘了star哦，你的star是对我最大的激励**
 
 ### 更新日志
++ 2018-09-20 16:31:13 更新，修复了自定义设置展开和收回内容无效的问题，依赖请使用tag版本v1.3.1
+    ```
+    mplementation 'com.github.MZCretin:ExpandableTextView:v1.3.1'
+    ```
+
 + 2018-09-20 16:31:13 更新
     + 一、提供了在RecyclerView中使用的时候，对之前状态的保存的功能支持；
     + 二、新增对@用户和链接的处理，用户可以设置不对这些内容进行识别，仅仅使用展开和收回功能；
     + 三、优化的demo的效果，请大家重新下载apk进行体验。
     + 四、如果你没有设置对链接的监听，会默认调用系统浏览器打开链接
-    + 五、最新版请使用v1.3
-
+    + 五、支持语言国际化
+    + 六、最新版请使用v1.3
 
 + 2018-09-03 17:39:56 修复一些bug，链接sheSpan位置错误，未生成release，等待下次修复其他bug一起打tag依赖包，使用请本地依赖使用
 
 + 2018-08-31 17:31:56 优化设置padding对宽度造成的影响，依赖请使用tag版本v1.2
+    ```
+    implementation 'com.github.MZCretin:ExpandableTextView:v1.2'
+    ```
 
 + 2018-08-31 11:21:22 在V1.0的基础上进行了优化，依赖请使用tag版本v1.1
+    ```
+    implementation 'com.github.MZCretin:ExpandableTextView:v1.1'
+    ```
 
 ### 实现效果：
 
@@ -43,7 +54,7 @@
 
  ```
  dependencies {
- 	        implementation 'com.github.MZCretin:ExpandableTextView:v1.3'
+ 	        implementation 'com.github.MZCretin:ExpandableTextView:请使用最新版本'
  	}
  ```
 
@@ -53,8 +64,6 @@
 
 扫描二维码下载：
 <img src="./extra/erweima.png"/>
-
-
 
 ### 代码说明
 

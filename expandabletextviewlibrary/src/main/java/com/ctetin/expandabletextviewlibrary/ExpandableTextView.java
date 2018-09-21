@@ -178,6 +178,11 @@ public class ExpandableTextView extends AppCompatTextView {
     }
 
     private void init(Context context, AttributeSet attrs, int defStyleAttr) {
+        //适配英文版
+        TEXT_CONTRACT = context.getString(R.string.social_contract);
+        TEXT_EXPEND = context.getString(R.string.social_expend);
+        TEXT_TARGET = context.getString(R.string.social_text_target);
+
         if (attrs != null) {
             TypedArray a =
                     getContext().obtainStyledAttributes(attrs, R.styleable.ExpandableTextView,
@@ -191,6 +196,12 @@ public class ExpandableTextView extends AppCompatTextView {
             mNeedLink = a.getBoolean(R.styleable.ExpandableTextView_ep_need_link, true);
             mContractString = a.getString(R.styleable.ExpandableTextView_ep_contract_text);
             mExpandString = a.getString(R.styleable.ExpandableTextView_ep_expand_text);
+            if (TextUtils.isEmpty(mExpandString)) {
+                mExpandString = TEXT_EXPEND;
+            }
+            if (TextUtils.isEmpty(mContractString)) {
+                mContractString = TEXT_CONTRACT;
+            }
             mExpandTextColor = a.getColor(R.styleable.ExpandableTextView_ep_expand_color,
                     Color.parseColor("#999999"));
             mEndExpandTextColor = a.getColor(R.styleable.ExpandableTextView_ep_expand_color,
@@ -207,10 +218,6 @@ public class ExpandableTextView extends AppCompatTextView {
             mLinkDrawable = context.getResources().getDrawable(R.mipmap.link);
         }
 
-        //适配英文版
-        TEXT_CONTRACT = context.getString(R.string.social_contract);
-        TEXT_EXPEND = context.getString(R.string.social_expend);
-        TEXT_TARGET = context.getString(R.string.social_text_target);
 
         mContext = context;
 
@@ -287,10 +294,10 @@ public class ExpandableTextView extends AppCompatTextView {
     private String getExpandEndContent() {
         if (TextUtils.isEmpty(mEndExpandContent)) {
             return String.format(Locale.getDefault(), "  %s",
-                    TEXT_CONTRACT);
+                    mContractString);
         } else {
             return String.format(Locale.getDefault(), "  %s  %s",
-                    mEndExpandContent, TEXT_CONTRACT);
+                    mEndExpandContent, mContractString);
         }
     }
 
@@ -302,10 +309,10 @@ public class ExpandableTextView extends AppCompatTextView {
     private String getHideEndContent() {
         if (TextUtils.isEmpty(mEndExpandContent)) {
             return String.format(Locale.getDefault(), "...  %s",
-                    TEXT_EXPEND);
+                    mExpandString);
         } else {
             return String.format(Locale.getDefault(), "...  %s  %s",
-                    mEndExpandContent, TEXT_EXPEND);
+                    mEndExpandContent, mExpandString);
         }
     }
 
@@ -377,7 +384,7 @@ public class ExpandableTextView extends AppCompatTextView {
                         ds.setColor(mExpandTextColor);
                         ds.setUnderlineText(false);
                     }
-                }, ssb.length() - TEXT_EXPEND.length() - expendLength, ssb.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+                }, ssb.length() - mExpandString.length() - expendLength, ssb.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
             } else {
                 ssb.append(formatData.formatedContent);
                 if (mNeedContract) {
@@ -402,7 +409,7 @@ public class ExpandableTextView extends AppCompatTextView {
                             ds.setColor(mContractTextColor);
                             ds.setUnderlineText(false);
                         }
-                    }, ssb.length() - TEXT_CONTRACT.length() - expendLength, ssb.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+                    }, ssb.length() - mContractString.length() - expendLength, ssb.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
                 } else {
                     if (!TextUtils.isEmpty(mEndExpandContent)) {
                         ssb.append(mEndExpandContent);
