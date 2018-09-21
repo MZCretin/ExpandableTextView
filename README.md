@@ -4,7 +4,7 @@
 ### 更新日志
 + 2018-09-20 16:31:13 更新，修复了自定义设置展开和收回内容无效的问题，依赖请使用tag版本v1.3.1
     ```
-    mplementation 'com.github.MZCretin:ExpandableTextView:v1.3.1'
+    implementation 'com.github.MZCretin:ExpandableTextView:v1.3.1'
     ```
 
 + 2018-09-20 16:31:13 更新
