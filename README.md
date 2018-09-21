@@ -166,7 +166,7 @@
 如果你希望在RecyclerView(或者ListView)中使用，请认真阅读demo中在RecyclerView中的使用，细节都在注释中。
 
 如果你需要在列表中保留之前的展开或收回状态，特殊说明的有以下几点：
-+ 一、实现 ExpandableStatusFix
+* 一、实现 ExpandableStatusFix
 * 二、在你的model中定义一个 private StatusType status;
 * 三、实现对应的方法，将你刚刚定义的status返回，
 * 四、并在给ExpandableTextView设置内容之前，调用bind方法
