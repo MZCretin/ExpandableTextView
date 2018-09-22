@@ -25,12 +25,15 @@ import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.ImageSpan;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 
+import com.ctetin.expandabletextviewlibrary.app.LinkType;
 import com.ctetin.expandabletextviewlibrary.app.StatusType;
 import com.ctetin.expandabletextviewlibrary.model.ExpandableStatusFix;
+import com.ctetin.expandabletextviewlibrary.model.FormatData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,6 +69,9 @@ public class ExpandableTextView extends AppCompatTextView {
 //    public static final String regexp = "http?://([-\\w\\.]+)+(:\\d+)?(/([\\w/_\\.]*(\\?\\S+)?)?)?";
 
     public static final String regexp_mention = "@[\\w\\p{InCJKUnifiedIdeographs}-]{1,26}";
+    //匹配自定义链接的正则表达式
+//    public static final String self_regex = "\\[([\\w\\p{InCJKUnifiedIdeographs}-]*)]\\([\\w\\p{InCJKUnifiedIdeographs}-]*\\)";
+    public static final String self_regex = "\\[([^\\[]*)\\]\\(([^\\(]*)\\)";
 
     private TextPaint mPaint;
 
@@ -119,6 +125,10 @@ public class ExpandableTextView extends AppCompatTextView {
      */
     private boolean mNeedLink = true;
 
+    /**
+     * 是否需要对自定义情况进行处理
+     */
+    private boolean mNeedSelf = false;
 
     /**
      * 是否需要动画 默认开启动画
@@ -133,11 +143,20 @@ public class ExpandableTextView extends AppCompatTextView {
      * 展开文字的颜色
      */
     private int mExpandTextColor;
+    /**
+     * 展开文字的颜色
+     */
+    private int mMentionTextColor;
 
     /**
      * 链接的字体颜色
      */
     private int mLinkTextColor;
+
+    /**
+     * 自定义规则的字体颜色
+     */
+    private int mSelfTextColor;
 
     /**
      * 收起的文字的颜色
@@ -192,6 +211,7 @@ public class ExpandableTextView extends AppCompatTextView {
             mNeedExpend = a.getBoolean(R.styleable.ExpandableTextView_ep_need_expand, true);
             mNeedContract = a.getBoolean(R.styleable.ExpandableTextView_ep_need_contract, false);
             mNeedAnimation = a.getBoolean(R.styleable.ExpandableTextView_ep_need_animation, true);
+            mNeedSelf = a.getBoolean(R.styleable.ExpandableTextView_ep_need_self, false);
             mNeedMention = a.getBoolean(R.styleable.ExpandableTextView_ep_need_mention, true);
             mNeedLink = a.getBoolean(R.styleable.ExpandableTextView_ep_need_link, true);
             mContractString = a.getString(R.styleable.ExpandableTextView_ep_contract_text);
@@ -209,6 +229,10 @@ public class ExpandableTextView extends AppCompatTextView {
             mContractTextColor = a.getColor(R.styleable.ExpandableTextView_ep_contract_color,
                     Color.parseColor("#999999"));
             mLinkTextColor = a.getColor(R.styleable.ExpandableTextView_ep_link_color,
+                    Color.parseColor("#FF6200"));
+            mSelfTextColor = a.getColor(R.styleable.ExpandableTextView_ep_self_color,
+                    Color.parseColor("#FF6200"));
+            mMentionTextColor = a.getColor(R.styleable.ExpandableTextView_ep_mention_color,
                     Color.parseColor("#FF6200"));
             int resId = a.getResourceId(R.styleable.ExpandableTextView_ep_link_res, R.mipmap.link);
             mLinkDrawable = getResources().getDrawable(resId);
@@ -233,7 +257,7 @@ public class ExpandableTextView extends AppCompatTextView {
         mFormatData = formatData(content);
         //用来计算内容的大小
         mDynamicLayout =
-                new DynamicLayout(mFormatData.formatedContent, mPaint, mWidth, Layout.Alignment.ALIGN_NORMAL, 1.2f, 0.0f,
+                new DynamicLayout(mFormatData.getFormatedContent(), mPaint, mWidth, Layout.Alignment.ALIGN_NORMAL, 1.2f, 0.0f,
                         true);
         //获取行数
         mLineCount = mDynamicLayout.getLineCount();
@@ -356,7 +380,7 @@ public class ExpandableTextView extends AppCompatTextView {
                 //计算原内容被截取的位置下标
                 int fitPosition =
                         getFitPosition(endPosition, startPosition, lineWidth, mPaint.measureText(endString), 0);
-                String substring = formatData.formatedContent.substring(0, fitPosition);
+                String substring = formatData.getFormatedContent().substring(0, fitPosition);
                 if (substring.endsWith("\n")) {
                     substring = substring.substring(0, substring.length() - "\n".length());
                 }
@@ -385,7 +409,7 @@ public class ExpandableTextView extends AppCompatTextView {
                     }
                 }, ssb.length() - mExpandString.length() - expendLength, ssb.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
             } else {
-                ssb.append(formatData.formatedContent);
+                ssb.append(formatData.getFormatedContent());
                 if (mNeedContract) {
                     String endString = getExpandEndContent();
                     ssb.append(endString);
@@ -417,7 +441,7 @@ public class ExpandableTextView extends AppCompatTextView {
                 }
             }
         } else {
-            ssb.append(formatData.formatedContent);
+            ssb.append(formatData.getFormatedContent());
             if (!TextUtils.isEmpty(mEndExpandContent)) {
                 ssb.append(mEndExpandContent);
                 ssb.setSpan(new ForegroundColorSpan(mEndExpandTextColor), ssb.length() - mEndExpandContent.length(), ssb.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
@@ -452,7 +476,7 @@ public class ExpandableTextView extends AppCompatTextView {
                         ssb.setSpan(imageSpan, data.getStart(), data.getStart() + 1, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
                         addUrl(ssb, data, data.getEnd());
                     }
-                } else {
+                } else if (data.getType().equals(LinkType.MENTION_TYPE)) {
                     //如果需要展开
                     if (mNeedExpend && ignoreMore) {
                         int fitPosition = ssb.length() - getHideEndContent().length();
@@ -468,6 +492,23 @@ public class ExpandableTextView extends AppCompatTextView {
                     } else {
                         addMention(ssb, data, data.getEnd());
                     }
+                } else if (data.getType().equals(LinkType.SELF)) {
+                    //自定义
+                    //如果需要展开
+                    if (mNeedExpend && ignoreMore) {
+                        int fitPosition = ssb.length() - getHideEndContent().length();
+                        if (data.getStart() < fitPosition) {
+                            int endPosition = data.getEnd();
+                            if (currentLines < mLineCount) {
+                                if (fitPosition < data.getEnd()) {
+                                    endPosition = fitPosition;
+                                }
+                            }
+                            addSelf(ssb, data, endPosition);
+                        }
+                    } else {
+                        addSelf(ssb, data, data.getEnd());
+                    }
                 }
             }
         }
@@ -476,6 +517,29 @@ public class ExpandableTextView extends AppCompatTextView {
         //将内容设置到控件中
         setText(ssb);
         return ssb;
+    }
+
+    /**
+     * 添加自定义规则
+     *
+     * @param ssb
+     * @param data
+     * @param endPosition
+     */
+    private void addSelf(SpannableStringBuilder ssb, final FormatData.PositionData data, int endPosition) {
+        ssb.setSpan(new ClickableSpan() {
+            @Override
+            public void onClick(View widget) {
+                if (linkClickListener != null)
+                    linkClickListener.onLinkClickListener(LinkType.SELF, data.getSelfAim(), data.getSelfContent());
+            }
+
+            @Override
+            public void updateDrawState(TextPaint ds) {
+                ds.setColor(mSelfTextColor);
+                ds.setUnderlineText(false);
+            }
+        }, data.getStart(), endPosition, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
     }
 
 
@@ -491,12 +555,12 @@ public class ExpandableTextView extends AppCompatTextView {
             @Override
             public void onClick(View widget) {
                 if (linkClickListener != null)
-                    linkClickListener.onLinkClickListener(LinkType.MENTION_TYPE, data.getUrl());
+                    linkClickListener.onLinkClickListener(LinkType.MENTION_TYPE, data.getUrl(), null);
             }
 
             @Override
             public void updateDrawState(TextPaint ds) {
-                ds.setColor(mLinkTextColor);
+                ds.setColor(mMentionTextColor);
                 ds.setUnderlineText(false);
             }
         }, data.getStart(), endPosition, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
@@ -514,7 +578,7 @@ public class ExpandableTextView extends AppCompatTextView {
             @Override
             public void onClick(View widget) {
                 if (linkClickListener != null) {
-                    linkClickListener.onLinkClickListener(LinkType.LINK_TYPE, data.getUrl());
+                    linkClickListener.onLinkClickListener(LinkType.LINK_TYPE, data.getUrl(), null);
                 } else {
                     //如果没有设置监听 则调用默认的打开浏览器显示连接
                     Intent intent = new Intent();
@@ -604,7 +668,7 @@ public class ExpandableTextView extends AppCompatTextView {
 
         //计算最后一行需要显示的正文的长度
         float measureText = mPaint.measureText(
-                (mFormatData.formatedContent.substring(startPosition, startPosition + position)));
+                (mFormatData.getFormatedContent().substring(startPosition, startPosition + position)));
 
         //如果最后一行需要显示的正文的长度比最后一行的长减去“展开”文字的长度要短就可以了  否则加个空格继续算
         if (measureText <= lineWidth - endStringWith) {
@@ -625,13 +689,43 @@ public class ExpandableTextView extends AppCompatTextView {
         List<FormatData.PositionData> datas = new ArrayList<>();
         //对链接进行正则匹配
 //        Pattern pattern = Pattern.compile(regexp, Pattern.CASE_INSENSITIVE);
-        Pattern pattern = AUTOLINK_WEB_URL;
+        Pattern pattern = Pattern.compile(self_regex, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(content);
         StringBuffer newResult = new StringBuffer();
         int start = 0;
         int end = 0;
         int temp = 0;
+        //对自定义的进行正则匹配
+        if (mNeedSelf) {
+            List<FormatData.PositionData> datasMention = new ArrayList<>();
+            while (matcher.find()) {
+                start = matcher.start();
+                end = matcher.end();
+                newResult.append(content.toString().substring(temp, start));
+                //将匹配到的内容进行统计处理
+                String result = matcher.group();
+                if (!TextUtils.isEmpty(result)) {
+                    //解析数据
+                    String aimSrt = result.substring(result.indexOf("[") + 1, result.indexOf("]"));
+                    String contentSrt = result.substring(result.indexOf("(") + 1, result.indexOf(")"));
+                    datasMention.add(new FormatData.PositionData(newResult.length() + 1, newResult.length() + 2 + aimSrt.length(), aimSrt, contentSrt, LinkType.SELF));
+                    newResult.append(" " + aimSrt + " ");
+                    temp = end;
+                }
+            }
+            datas.addAll(datasMention);
+        }
+        //重置状态
+        newResult.append(content.toString().substring(end, content.toString().length()));
+        content = newResult.toString();
+        newResult = new StringBuffer();
+        start = 0;
+        end = 0;
+        temp = 0;
+
         if (mNeedLink) {
+            pattern = AUTOLINK_WEB_URL;
+            matcher = pattern.matcher(content);
             while (matcher.find()) {
                 start = matcher.start();
                 end = matcher.end();
@@ -654,79 +748,10 @@ public class ExpandableTextView extends AppCompatTextView {
             }
             datas.addAll(0, datasMention);
         }
+
         formatData.setFormatedContent(newResult.toString());
         formatData.setPositionDatas(datas);
         return formatData;
-    }
-
-    /**
-     * 记录可以点击的内容 和 位置
-     */
-    static class FormatData {
-        private String formatedContent;
-        private List<PositionData> positionDatas;
-
-        public String getFormatedContent() {
-            return formatedContent;
-        }
-
-        public void setFormatedContent(String formatedContent) {
-            this.formatedContent = formatedContent;
-        }
-
-        public List<PositionData> getPositionDatas() {
-            return positionDatas;
-        }
-
-        public void setPositionDatas(List<PositionData> positionDatas) {
-            this.positionDatas = positionDatas;
-        }
-
-        static class PositionData {
-            private int start;
-            private int end;
-            private String url;
-            private LinkType type;
-
-            public LinkType getType() {
-                return type;
-            }
-
-            public void setType(LinkType type) {
-                this.type = type;
-            }
-
-            public String getUrl() {
-                return url;
-            }
-
-            public void setUrl(String url) {
-                this.url = url;
-            }
-
-            public PositionData(int start, int end, String url, LinkType type) {
-                this.start = start;
-                this.end = end;
-                this.url = url;
-                this.type = type;
-            }
-
-            public int getStart() {
-                return start;
-            }
-
-            public void setStart(int start) {
-                this.start = start;
-            }
-
-            public int getEnd() {
-                return end;
-            }
-
-            public void setEnd(int end) {
-                this.end = end;
-            }
-        }
     }
 
     /**
@@ -848,15 +873,7 @@ public class ExpandableTextView extends AppCompatTextView {
     }
 
     public interface OnLinkClickListener {
-        void onLinkClickListener(LinkType type, String content);
-    }
-
-    //定义类型的枚举类型
-    public enum LinkType {
-        //普通链接
-        LINK_TYPE,
-        //@用户
-        MENTION_TYPE
+        void onLinkClickListener(LinkType type, String content, String selfContent);
     }
 
     public OnLinkClickListener getLinkClickListener() {
@@ -969,5 +986,21 @@ public class ExpandableTextView extends AppCompatTextView {
 
     public void setNeedLink(boolean mNeedLink) {
         this.mNeedLink = mNeedLink;
+    }
+
+    public int getSelfTextColor() {
+        return mSelfTextColor;
+    }
+
+    public void setSelfTextColor(int mSelfTextColor) {
+        this.mSelfTextColor = mSelfTextColor;
+    }
+
+    public boolean isNeedSelf() {
+        return mNeedSelf;
+    }
+
+    public void setNeedSelf(boolean mNeedSelf) {
+        this.mNeedSelf = mNeedSelf;
     }
 }

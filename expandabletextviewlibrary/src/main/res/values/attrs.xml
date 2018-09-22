@@ -12,6 +12,8 @@
         <attr name="ep_need_link" format="boolean" />
         <!--是否需要动画-->
         <attr name="ep_need_animation" format="boolean" />
+        <!--是否需要自定义规则-->
+        <attr name="ep_need_self" format="boolean" />
         <!--收起的文案-->
         <attr name="ep_contract_text" format="string" />
         <!--展开的文案-->
@@ -24,6 +26,10 @@
         <attr name="ep_end_color" format="color" />
         <!--链接的文字的颜色-->
         <attr name="ep_link_color" format="color" />
+        <!--@用户的文字的颜色-->
+        <attr name="ep_mention_color" format="color" />
+        <!--自定义规则的文字的颜色-->
+        <attr name="ep_self_color" format="color" />
         <!--链接的图标-->
         <attr name="ep_link_res" format="reference" />
     </declare-styleable>

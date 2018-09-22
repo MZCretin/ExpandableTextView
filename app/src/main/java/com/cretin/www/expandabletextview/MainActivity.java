@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ctetin.expandabletextviewlibrary.ExpandableTextView;
+import com.ctetin.expandabletextviewlibrary.app.LinkType;
 
 import java.util.regex.Pattern;
 
@@ -43,22 +44,25 @@ public class MainActivity extends AppCompatActivity {
             "3,5;6,9;10,11;14,16",
             "3,5;6,9;10,11;14,15;20,21",
             "3,5;6,9;10,11;14,16;21,22",
+            "3,5;6,9;10,11;14,15;20,21"
     };
 
     private TextView tvTips00;
 
-    private ExpandableTextView.OnLinkClickListener linkClickListener = (type, content) -> {
-        if (type.equals(ExpandableTextView.LinkType.LINK_TYPE)) {
+    private ExpandableTextView.OnLinkClickListener linkClickListener = (type, content, selfContent) -> {
+        if (type.equals(LinkType.LINK_TYPE)) {
             Toast.makeText(MainActivity.this, "你点击了链接 内容是：" + content, Toast.LENGTH_SHORT).show();
-        } else if (type.equals(ExpandableTextView.LinkType.MENTION_TYPE)) {
+        } else if (type.equals(LinkType.MENTION_TYPE)) {
             Toast.makeText(MainActivity.this, "你点击了@用户 内容是：" + content, Toast.LENGTH_SHORT).show();
+        } else if (type.equals(LinkType.SELF)) {
+            Toast.makeText(MainActivity.this, "你点击了自定义规则 内容是：" + content + " " + selfContent, Toast.LENGTH_SHORT).show();
         }
     };
 
 
-    private void initView(){
-        views = new ExpandableTextView[8];
-        tips = new TextView[8];
+    private void initView() {
+        views = new ExpandableTextView[9];
+        tips = new TextView[9];
         views[0] = findViewById(R.id.ep_01);
         views[1] = findViewById(R.id.ep_02);
         views[2] = findViewById(R.id.ep_03);
@@ -67,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
         views[5] = findViewById(R.id.ep_06);
         views[6] = findViewById(R.id.ep_07);
         views[7] = findViewById(R.id.ep_08);
+        views[8] = findViewById(R.id.ep_09);
         tips[0] = findViewById(R.id.tv_tips01);
         tips[1] = findViewById(R.id.tv_tips02);
         tips[2] = findViewById(R.id.tv_tips03);
@@ -75,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
         tips[5] = findViewById(R.id.tv_tips06);
         tips[6] = findViewById(R.id.tv_tips07);
         tips[7] = findViewById(R.id.tv_tips08);
+        tips[8] = findViewById(R.id.tv_tips09);
         tvTips00 = findViewById(R.id.tv_tips00);
     }
 
@@ -86,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
         initView();
 
         setTips();
-        String yourText = "    我所认识的中国，强大、友好。@奥特曼 “一带一路”经济带带动了沿线国家的经济发展，促进我国与他国的友好往来和贸易发展，可谓“双赢”。http://www.baidu.com 自古以来，中国以和平、友好的面孔示人。汉武帝派张骞出使西域，开辟丝绸之路，增进与西域各国的友好往来。http://www.baidu.com 胡麻、胡豆、香料等食材也随之传入中国，汇集于中华美食。@RNG 漠漠古道，驼铃阵阵，这条路奠定了“一带一路”的基础，让世界认识了中国。";
+        String yourText = "    我所认识的中国，强大、友好 --习大大。@奥特曼 “一带一路”经济带带动了沿线国家的经济发展，促进我国与他国的友好往来和贸易发展，可谓“双赢”，Github地址。http://www.baidu.com 自古以来，中国以和平、友好的面孔示人。汉武帝派张骞出使西域，开辟丝绸之路，增进与西域各国的友好往来。http://www.baidu.com 胡麻、胡豆、香料等食材也随之传入中国，汇集于中华美食。@RNG 漠漠古道，驼铃阵阵，这条路奠定了“一带一路”的基础，让世界认识了中国。";
 
         //1、正常带链接和@用户，没有展开和收回功能
         views[0].setContent(yourText);
@@ -103,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
         //4、正常带链接和@用户，有展开和收回功能，有切换动画
         views[3].setContent(yourText);
         views[3].setLinkClickListener(linkClickListener);
+        views[3].setNeedSelf(true);
 
         //5、正常带链接和@用户，有展开和收回功能，没有切换动画
         views[4].setContent(yourText);
@@ -121,6 +128,12 @@ public class MainActivity extends AppCompatActivity {
         views[7].setContent(yourText);
         views[7].setEndExpendContent(" 1小时前");
         views[7].setLinkClickListener(linkClickListener);
+
+        //9、正常带链接和@用户，有展开，有收回功能，带自定义规则（解析[标题](规则)并处理，例如对一些字段进行自定义处理，比如文字中的"--习大大" 和 "Gitbub地址"）
+        //如果你需要对一些字段进行自定义处理，比如文字中的"--习大大" 和 "Gitbub地址"，你需要按照下面的形式去组装数据，这样控件就可以自动去解析并展示。
+        yourText = "    我所认识的中国，强大、友好，[--习大大](schema_jump_userinfo)。@奥特曼 “一带一路”经济带带动了沿线国家的经济发展，促进我国与他国的友好往来和贸易发展，可谓“双赢”，[Github地址](https://github.com/MZCretin/ExpandableTextView)。http://www.baidu.com 自古以来，中国以和平、友好的面孔示人。汉武帝派张骞出使西域，开辟丝绸之路，增进与西域各国的友好往来。http://www.baidu.com 胡麻、胡豆、香料等食材也随之传入中国，汇集于中华美食。@RNG 漠漠古道，驼铃阵阵，这条路奠定了“一带一路”的基础，让世界认识了中国。";
+        views[8].setContent(yourText);
+        views[8].setLinkClickListener(linkClickListener);
 
         //在RecyclerView中查看效果
         findViewById(R.id.ll_recyclerview).setOnClickListener(v -> {

@@ -265,6 +265,32 @@
             app:ep_need_contract="false"
             app:ep_need_expand="true" />
 
+        <TextView
+            android:id="@+id/tv_tips09"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#e6e6e6"
+            android:lineSpacingExtra="4dp"
+            android:paddingBottom="10dp"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
+            android:paddingTop="10dp"
+            android:text="9、正常带链接和@用户，有展开，有收回功能，带自定义规则（解析[标题](规则)并处理，例如对一些字段进行自定义处理，比如文字中的'--习大大' 和 'Gitbub地址'）"
+            android:textColor="#666666"
+            android:textSize="12sp" />
+
+        <com.ctetin.expandabletextviewlibrary.ExpandableTextView
+            android:id="@+id/ep_09"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:lineSpacingExtra="5dp"
+            android:textSize="14sp"
+            app:ep_max_line="5"
+            app:ep_need_contract="true"
+            app:ep_need_self="true"
+            app:ep_need_expand="true" />
+
         <LinearLayout
             android:id="@+id/ll_ad"
             android:layout_width="match_parent"

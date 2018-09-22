@@ -96,13 +96,16 @@ public class ShowInRecyclerViewActivity extends AppCompatActivity {
             } else {
                 holder.textView.setContent(((ViewModel) list.get(position)).getTitle());
             }
-            holder.textView.setLinkClickListener((type, content1) -> {
+            holder.textView.setLinkClickListener((type, content, selfContent) -> {
                 switch (type) {
                     case LINK_TYPE:
-                        Toast.makeText(mContext, "点击链接：" + content1, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mContext, "点击链接：" + content, Toast.LENGTH_SHORT).show();
                         break;
                     case MENTION_TYPE:
-                        Toast.makeText(mContext, "点击用户：" + content1, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mContext, "点击用户：" + content, Toast.LENGTH_SHORT).show();
+                        break;
+                    case SELF:
+                        Toast.makeText(mContext, "你点击了自定义规则 内容是：" + content + " " + selfContent, Toast.LENGTH_SHORT).show();
                         break;
                 }
             });
