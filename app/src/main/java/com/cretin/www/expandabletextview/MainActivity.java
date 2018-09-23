@@ -131,9 +131,16 @@ public class MainActivity extends AppCompatActivity {
 
         //9、正常带链接和@用户，有展开，有收回功能，带自定义规则（解析[标题](规则)并处理，例如对一些字段进行自定义处理，比如文字中的"--习大大" 和 "Gitbub地址"）
         //如果你需要对一些字段进行自定义处理，比如文字中的"--习大大" 和 "Gitbub地址"，你需要按照下面的形式去组装数据，这样控件就可以自动去解析并展示。
+        /**
+         * 如需使用此功能，需要先开启
+         * app:ep_need_self="true"
+         * views[8].setNeedSelf(true);
+         */
         yourText = "    我所认识的中国，强大、友好，[--习大大](schema_jump_userinfo)。@奥特曼 “一带一路”经济带带动了沿线国家的经济发展，促进我国与他国的友好往来和贸易发展，可谓“双赢”，[Github地址](https://github.com/MZCretin/ExpandableTextView)。http://www.baidu.com 自古以来，中国以和平、友好的面孔示人。汉武帝派张骞出使西域，开辟丝绸之路，增进与西域各国的友好往来。http://www.baidu.com 胡麻、胡豆、香料等食材也随之传入中国，汇集于中华美食。@RNG 漠漠古道，驼铃阵阵，这条路奠定了“一带一路”的基础，让世界认识了中国。";
         views[8].setContent(yourText);
         views[8].setLinkClickListener(linkClickListener);
+        //需要先开启
+        views[8].setNeedSelf(true);
 
         //在RecyclerView中查看效果
         findViewById(R.id.ll_recyclerview).setOnClickListener(v -> {

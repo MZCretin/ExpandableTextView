@@ -82,8 +82,14 @@
         <attr name="ep_need_expand" format="boolean" />
         <!--是否需要收起 这个是建立在开启展开的基础上的-->
         <attr name="ep_need_contract" format="boolean" />
+        <!--是否需要@用户 -->
+        <attr name="ep_need_mention" format="boolean" />
+        <!--是否需要对链接进行处理 -->
+        <attr name="ep_need_link" format="boolean" />
         <!--是否需要动画-->
         <attr name="ep_need_animation" format="boolean" />
+        <!--是否需要自定义规则-->
+        <attr name="ep_need_self" format="boolean" />
         <!--收起的文案-->
         <attr name="ep_contract_text" format="string" />
         <!--展开的文案-->
@@ -96,13 +102,12 @@
         <attr name="ep_end_color" format="color" />
         <!--链接的文字的颜色-->
         <attr name="ep_link_color" format="color" />
+        <!--@用户的文字的颜色-->
+        <attr name="ep_mention_color" format="color" />
+        <!--自定义规则的文字的颜色-->
+        <attr name="ep_self_color" format="color" />
         <!--链接的图标-->
-        <attr name="ep_link_res" format="reference" />
-        <!--是否需要对@用户进行识别-->
-        <attr name="ep_need_mention" format="boolean" />
-        <!--是否需要对链接进行识别-->
-        <attr name="ep_need_link" format="boolean" />
-
+        <attr name="ep_link_res" format="refere
 
         //布局文件中使用 可选 也可以在代码中设置
         <com.ctetin.expandabletextviewlibrary.ExpandableTextView
@@ -136,6 +141,12 @@
                     app:ep_link_res="@color/colorAccent"
                     <!--展开的文字的颜色-->
                     app:ep_contract_color="@color/colorAccent"
+                    <!--@用户的文字的颜色-->
+                    app:ep_mention_color="@color/colorAccent"
+                    <!--是否需要自定义规则-->
+                    app:ep_need_self="true"
+                    <!--自定义规则的文字的颜色-->
+                    app:ep_self_color="@color/colorAccent"
                     <!--是否需要展开功能-->
                     app:ep_need_expand="false" />
 ```
@@ -179,6 +190,11 @@
 * 在一段文字中将你需要处理的文字做上特殊标记，，标记的规则就是\[显示的内容\](动作)，这个标记的规则可以交给后台给你处理，或者你自己处理也可以。
 * 比如上文中的"Github地址"，那么标记后就是这样的  \[Github地址\]\( https://github.com/MZCretin/ExpandableTextView )，这样在控件中显示的就只是Github地址，可以点击，当点击之后，会将"显示的内容"和"动作"都通过接口回调的方式回传给调用者自己处理；
 * 再比如上文中的"--习大大"，那么标记后就是这样的 \[--习大大\](schema_jump_userinfo)，这样控件中只会显示"--习大大"，然后根据后面的动作去做处理，比如这是一个用户，可以跳转到这个用户的个人详情页面。
+* 默认不会对自定义规则进行解析，如需开启，请开启此功能：
+   ```
+   <!--是否需要自定义规则-->
+   app:ep_need_self="true"
+   ```
 
 ### V1.3：2018-09-20 16:31:13 更新了如下特性 版本v1.3+可以正常使用
 

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="ExpandableTextView">
+        <!--保留的行数-->
         <attr name="ep_max_line" format="integer" />
         <!--是否需要展开-->
         <attr name="ep_need_expand" format="boolean" />
