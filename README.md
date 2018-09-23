@@ -167,12 +167,14 @@
         //添加点击监听
         expandableTextView.setLinkClickListener(new ExpandableTextView.OnLinkClickListener() {
             @Override
-            public void onLinkClickListener(ExpandableTextView.LinkType linkType, String content) {
+            public void onLinkClickListener(LinkType linkType, String content,String selfContent) {
                 //根据类型去判断
-                if (linkType.equals(ExpandableTextView.LinkType.LINK_TYPE)) {
+                if (type.equals(LinkType.LINK_TYPE)) {
                     Toast.makeText(MainActivity.this, "你点击了链接 内容是：" + content, Toast.LENGTH_SHORT).show();
-                } else if (linkType.equals(ExpandableTextView.LinkType.MENTION_TYPE)) {
+                } else if (type.equals(LinkType.MENTION_TYPE)) {
                     Toast.makeText(MainActivity.this, "你点击了@用户 内容是：" + content, Toast.LENGTH_SHORT).show();
+                } else if (type.equals(LinkType.SELF)) {
+                    Toast.makeText(MainActivity.this, "你点击了自定义规则 内容是：" + content + " " + selfContent, Toast.LENGTH_SHORT).show();
                 }
             }
         });
