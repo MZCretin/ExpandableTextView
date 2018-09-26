@@ -25,7 +25,6 @@ import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.ImageSpan;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
@@ -131,6 +130,11 @@ public class ExpandableTextView extends AppCompatTextView {
     private boolean mNeedSelf = false;
 
     /**
+     * 是否需要永远将展开或收回显示在最右边
+     */
+    private boolean mNeedAlwaysShowRight = false;
+
+    /**
      * 是否需要动画 默认开启动画
      */
     private boolean mNeedAnimation = true;
@@ -197,6 +201,7 @@ public class ExpandableTextView extends AppCompatTextView {
     }
 
     private void init(Context context, AttributeSet attrs, int defStyleAttr) {
+
         //适配英文版
         TEXT_CONTRACT = context.getString(R.string.social_contract);
         TEXT_EXPEND = context.getString(R.string.social_expend);
@@ -214,6 +219,7 @@ public class ExpandableTextView extends AppCompatTextView {
             mNeedSelf = a.getBoolean(R.styleable.ExpandableTextView_ep_need_self, false);
             mNeedMention = a.getBoolean(R.styleable.ExpandableTextView_ep_need_mention, true);
             mNeedLink = a.getBoolean(R.styleable.ExpandableTextView_ep_need_link, true);
+            mNeedAlwaysShowRight = a.getBoolean(R.styleable.ExpandableTextView_ep_need_always_showright, false);
             mContractString = a.getString(R.styleable.ExpandableTextView_ep_contract_text);
             mExpandString = a.getString(R.styleable.ExpandableTextView_ep_expand_text);
             if (TextUtils.isEmpty(mExpandString)) {
@@ -241,7 +247,6 @@ public class ExpandableTextView extends AppCompatTextView {
         } else {
             mLinkDrawable = context.getResources().getDrawable(R.mipmap.link);
         }
-
 
         mContext = context;
 
@@ -332,10 +337,10 @@ public class ExpandableTextView extends AppCompatTextView {
      */
     private String getHideEndContent() {
         if (TextUtils.isEmpty(mEndExpandContent)) {
-            return String.format(Locale.getDefault(), "...  %s",
+            return String.format(Locale.getDefault(), mNeedAlwaysShowRight ? "  %s" : "...  %s",
                     mExpandString);
         } else {
-            return String.format(Locale.getDefault(), "...  %s  %s",
+            return String.format(Locale.getDefault(), mNeedAlwaysShowRight ? "  %s  %s" : "...  %s  %s",
                     mEndExpandContent, mExpandString);
         }
     }
@@ -379,12 +384,28 @@ public class ExpandableTextView extends AppCompatTextView {
 
                 //计算原内容被截取的位置下标
                 int fitPosition =
-                        getFitPosition(endPosition, startPosition, lineWidth, mPaint.measureText(endString), 0);
+                        getFitPosition(endString, endPosition, startPosition, lineWidth, mPaint.measureText(endString), 0);
                 String substring = formatData.getFormatedContent().substring(0, fitPosition);
                 if (substring.endsWith("\n")) {
                     substring = substring.substring(0, substring.length() - "\n".length());
                 }
                 ssb.append(substring);
+
+                if (mNeedAlwaysShowRight) {
+                    //计算一下最后一行有没有充满
+                    float emptyWidth = getWidth() - lineWidth - mPaint.measureText(endString);
+                    if (emptyWidth > 0) {
+                        float measureText = mPaint.measureText(Space);
+                        int count = 0;
+                        while (measureText * count < emptyWidth) {
+                            count++;
+                        }
+                        count = count - 1;
+                        for (int i = 0; i < count; i++) {
+                            ssb.append(Space);
+                        }
+                    }
+                }
 
                 //在被截断的文字后面添加 展开 文字
                 ssb.append(endString);
@@ -412,6 +433,25 @@ public class ExpandableTextView extends AppCompatTextView {
                 ssb.append(formatData.getFormatedContent());
                 if (mNeedContract) {
                     String endString = getExpandEndContent();
+
+                    if (mNeedAlwaysShowRight) {
+                        //计算一下最后一行有没有充满
+                        int index = mDynamicLayout.getLineCount() - 1;
+                        float lineWidth = mDynamicLayout.getLineWidth(index);
+                        float emptyWidth = getWidth() - lineWidth - mPaint.measureText(endString);
+                        if (emptyWidth > 0) {
+                            float measureText = mPaint.measureText(Space);
+                            int count = 0;
+                            while (measureText * count < emptyWidth) {
+                                count++;
+                            }
+                            count = count - 1;
+                            for (int i = 0; i < count; i++) {
+                                ssb.append(Space);
+                            }
+                        }
+                    }
+
                     ssb.append(endString);
 
                     int expendLength = TextUtils.isEmpty(mEndExpandContent) ? 0 : 2 + mEndExpandContent.length();
@@ -520,6 +560,23 @@ public class ExpandableTextView extends AppCompatTextView {
     }
 
     /**
+     * 获取需要插入的空格
+     *
+     * @param emptyWidth
+     * @param endStringWidth
+     * @return
+     */
+    private int getFitSpaceCount(float emptyWidth, float endStringWidth) {
+        float measureText = mPaint.measureText(Space);
+        int count = 0;
+        while (endStringWidth + measureText * count < emptyWidth) {
+            count++;
+        }
+        return --count;
+    }
+
+
+    /**
      * 添加自定义规则
      *
      * @param ssb
@@ -584,7 +641,7 @@ public class ExpandableTextView extends AppCompatTextView {
                     Intent intent = new Intent();
                     intent.setAction("android.intent.action.VIEW");
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    Uri url = Uri.parse("http://www.baidu.com");
+                    Uri url = Uri.parse(data.getUrl());
                     intent.setData(url);
                     mContext.startActivity(intent);
                 }
@@ -651,20 +708,21 @@ public class ExpandableTextView extends AppCompatTextView {
     /**
      * 计算原内容被裁剪的长度
      *
-     * @param endPosition
-     * @param startPosition
-     * @param lineWidth
-     * @param endStringWith
-     * @param offset
+     * @param endString
+     * @param endPosition   指定行最后文字的位置
+     * @param startPosition 指定行文字开始的位置
+     * @param lineWidth     指定行文字的宽度
+     * @param endStringWith 最后添加的文字的宽度
+     * @param offset        偏移量
      * @return
      */
-    private int getFitPosition(int endPosition, int startPosition, float lineWidth,
+    private int getFitPosition(String endString, int endPosition, int startPosition, float lineWidth,
                                float endStringWith, float offset) {
         //最后一行需要添加的文字的字数
         int position = (int) ((lineWidth - (endStringWith + offset)) * (endPosition - startPosition)
                 / lineWidth);
 
-        if (position < 0) return endPosition;
+        if (position <= endString.length()) return endPosition;
 
         //计算最后一行需要显示的正文的长度
         float measureText = mPaint.measureText(
@@ -674,7 +732,7 @@ public class ExpandableTextView extends AppCompatTextView {
         if (measureText <= lineWidth - endStringWith) {
             return startPosition + position;
         } else {
-            return getFitPosition(endPosition, startPosition, lineWidth, endStringWith, offset + mPaint.measureText(Space));
+            return getFitPosition(endString, endPosition, startPosition, lineWidth, endStringWith, offset + mPaint.measureText(Space));
         }
     }
 
@@ -1002,5 +1060,13 @@ public class ExpandableTextView extends AppCompatTextView {
 
     public void setNeedSelf(boolean mNeedSelf) {
         this.mNeedSelf = mNeedSelf;
+    }
+
+    public boolean isNeedAlwaysShowRight() {
+        return mNeedAlwaysShowRight;
+    }
+
+    public void setNeedAlwaysShowRight(boolean mNeedAlwaysShowRight) {
+        this.mNeedAlwaysShowRight = mNeedAlwaysShowRight;
     }
 }

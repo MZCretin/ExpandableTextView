@@ -21,7 +21,7 @@
             android:paddingLeft="15dp"
             android:paddingRight="15dp"
             android:paddingTop="10dp"
-            android:text="ExpandTextView包含如下功能：\n1、实现类似微博@好友的功能，对@内容进行高亮显示，可以点击\n2、实现链接的高亮显示，可以点击，并且对链接进行原文隐藏\n3、实现内容超过指定行数折叠效果，点击可以展开内容\n4、在原文内容末尾添加指定内容，比如时间串，详情见效果图\n\n联系我：\n792075058@qq.com\n\n博客地址：\nhttps://www.jianshu.com/p/5519fbab6907\n\nGithub地址(您的star是对我最大的鼓励)：\nhttps://github.com/MZCretin/ExpandableTextView\n\n"
+            android:text="ExpandTextView包含如下功能：\n1、实现类似微博@好友的功能，对@内容进行高亮显示，可以点击\n2、实现链接的高亮显示，可以点击，并且对链接进行原文隐藏\n3、实现内容超过指定行数折叠效果，点击可以展开内容\n4、在原文内容末尾添加指定内容，比如时间串，详情见效果图\n5、自定义高亮规则，实现自定义位置点击\n6、RecyclerView中可记住展开和收回状态\n7、可固定展开和收回按钮在最右边或紧贴内容后边\n\n联系我：\n792075058@qq.com\n\n博客地址：\nhttps://www.jianshu.com/p/5519fbab6907\n\nGithub地址(您的star是对我最大的鼓励)：\nhttps://github.com/MZCretin/ExpandableTextView\n"
             android:textColor="#333333"
             android:textSize="14sp" />
 
@@ -275,7 +275,7 @@
             android:paddingLeft="15dp"
             android:paddingRight="15dp"
             android:paddingTop="10dp"
-            android:text="9、正常带链接和@用户，有展开，有收回功能，带自定义规则（解析[标题](规则)并处理，例如对一些字段进行自定义处理，比如文字中的'--习大大' 和 'Gitbub地址'）"
+            android:text="9、正常带链接和@用户，有展开，有收回功能，有'展开'和'收起'始终靠右显示的功能"
             android:textColor="#666666"
             android:textSize="12sp" />
 
@@ -288,8 +288,34 @@
             android:textSize="14sp"
             app:ep_max_line="5"
             app:ep_need_contract="true"
-            app:ep_need_self="true"
-            app:ep_need_expand="true" />
+            app:ep_need_expand="true"
+            app:ep_need_self="true" />
+
+        <TextView
+            android:id="@+id/tv_tips10"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#e6e6e6"
+            android:lineSpacingExtra="4dp"
+            android:paddingBottom="10dp"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
+            android:paddingTop="10dp"
+            android:text="10、正常带链接和@用户，有展开，有收回功能，带自定义规则（解析[标题](规则)并处理，例如对一些字段进行自定义处理，比如文字中的'--习大大' 和 'Gitbub地址'）"
+            android:textColor="#666666"
+            android:textSize="12sp" />
+
+        <com.ctetin.expandabletextviewlibrary.ExpandableTextView
+            android:id="@+id/ep_10"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:lineSpacingExtra="5dp"
+            android:textSize="14sp"
+            app:ep_max_line="5"
+            app:ep_need_contract="true"
+            app:ep_need_expand="true"
+            app:ep_need_self="true" />
 
         <LinearLayout
             android:id="@+id/ll_ad"

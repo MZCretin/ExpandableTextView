@@ -13,6 +13,8 @@
         <attr name="ep_need_link" format="boolean" />
         <!--是否需要动画-->
         <attr name="ep_need_animation" format="boolean" />
+        <!--是否需要永远将展开或者收回放置在最后边-->
+        <attr name="ep_need_always_showright" format="boolean" />
         <!--是否需要自定义规则-->
         <attr name="ep_need_self" format="boolean" />
         <!--收起的文案-->
