@@ -223,7 +223,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         View view = LayoutInflater.from(this).inflate(R.layout.dialog_input, null);
         new AlertDialog.Builder(this)
-                .setMessage("请输入新内容")
+                .setMessage("请输入将要替换的内容:")
                 .setTitle("提示")
                 .setView(view)
                 .setNegativeButton("取消", (dialog, which) -> dialog.dismiss())

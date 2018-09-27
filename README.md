@@ -2,7 +2,12 @@
  **实现类似微博内容，@用户，链接高亮，@用户和链接可点击跳转，可展开和收回的TextView。觉得好用别忘了star哦，你的star是对我最大的激励**
 
 ### 更新日志
-+ 2018-09-22 23:32:16 更新，新增自定义规则解析，具体效果请查看效果图的第9条，依赖版本请使用tag版本v1.4，[查看说明](#新特性额外说明)
++ 2018-09-27 09:18:14 更新
+    + 修复了不添加事件监听，点击链接会直接打开百度页面；
+    + 在demo中添加自定义设置显示文本的功能，您可以自己设置需要显示的文本，然后查看对应的显示效果；
+    + 新增了"展开"和"收回"按钮始终居右的功能，具体效果请查看效果图的第9条，依赖版本请使用tag版本v1.5，[查看说明](#新特性额外说明)
+
++ 2018-09-22 23:32:16 更新，新增自定义规则解析，具体效果请查看效果图的第10条，依赖版本请使用tag版本v1.4，[查看说明](#新特性额外说明)
     ```
     implementation 'com.github.MZCretin:ExpandableTextView:v1.4'
     ```
@@ -107,7 +112,9 @@
         <!--自定义规则的文字的颜色-->
         <attr name="ep_self_color" format="color" />
         <!--链接的图标-->
-        <attr name="ep_link_res" format="refere
+        <attr name="ep_link_res" format="reference"/>
+        <!--是否需要永远将展开或者收回放置在最后边-->
+        <attr name="ep_need_always_showright" format="boolean" />
 
         //布局文件中使用 可选 也可以在代码中设置
         <com.ctetin.expandabletextviewlibrary.ExpandableTextView
@@ -147,8 +154,11 @@
                     app:ep_need_self="true"
                     <!--自定义规则的文字的颜色-->
                     app:ep_self_color="@color/colorAccent"
+                    <!--是否需要永远将展开或者收回放置在最后边-->
+                    app:ep_need_always_showright="true"
                     <!--是否需要展开功能-->
                     app:ep_need_expand="false" />
+
 ```
 
 + java代码
@@ -181,6 +191,16 @@
 ```
 
 ### 新特性额外说明
+
+### V1.5: 2018-09-27 09:20:28 更新了如下特性 版本v1.5+可以正常使用
+如果你需要将"展开"和"收回"始终居右显示，你需要开启它，具体效果可以参考效果图第9条
+```
+//需要先开启始终靠右显示的功能
+views[8].setNeedAlwaysShowRight(true);
+
+//或者在xml中开启
+app:ep_need_always_showright="true"
+```
 
 ### V1.4：2018-09-22 23:32:16 更新了如下特性 版本v1.4+可以正常使用
 
