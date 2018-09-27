@@ -7,6 +7,10 @@
     + 在demo中添加自定义设置显示文本的功能，您可以自己设置需要显示的文本，然后查看对应的显示效果；
     + 新增了"展开"和"收回"按钮始终居右的功能，具体效果请查看效果图的第9条，依赖版本请使用tag版本v1.5，[查看说明](#新特性额外说明)
 
+    ```
+        implementation 'com.github.MZCretin:ExpandableTextView:v1.5'
+    ```
+
 + 2018-09-22 23:32:16 更新，新增自定义规则解析，具体效果请查看效果图的第10条，依赖版本请使用tag版本v1.4，[查看说明](#新特性额外说明)
     ```
     implementation 'com.github.MZCretin:ExpandableTextView:v1.4'
