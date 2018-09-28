@@ -393,7 +393,12 @@ public class ExpandableTextView extends AppCompatTextView {
 
                 if (mNeedAlwaysShowRight) {
                     //计算一下最后一行有没有充满
-                    float emptyWidth = getWidth() - lineWidth - mPaint.measureText(endString);
+                    float lastLineWidth = 0;
+                    for (int i = 0; i < index; i++) {
+                        lastLineWidth += mDynamicLayout.getLineWidth(i);
+                    }
+                    lastLineWidth = lastLineWidth / (index);
+                    float emptyWidth = lastLineWidth - lineWidth - mPaint.measureText(endString);
                     if (emptyWidth > 0) {
                         float measureText = mPaint.measureText(Space);
                         int count = 0;
@@ -438,7 +443,12 @@ public class ExpandableTextView extends AppCompatTextView {
                         //计算一下最后一行有没有充满
                         int index = mDynamicLayout.getLineCount() - 1;
                         float lineWidth = mDynamicLayout.getLineWidth(index);
-                        float emptyWidth = getWidth() - lineWidth - mPaint.measureText(endString);
+                        float lastLineWidth = 0;
+                        for (int i = 0; i < index; i++) {
+                            lastLineWidth += mDynamicLayout.getLineWidth(i);
+                        }
+                        lastLineWidth = lastLineWidth / (index);
+                        float emptyWidth = lastLineWidth - lineWidth - mPaint.measureText(endString);
                         if (emptyWidth > 0) {
                             float measureText = mPaint.measureText(Space);
                             int count = 0;

@@ -36,7 +36,7 @@
             android:paddingTop="10dp"
             android:text="特别：在RecyclerView中的使用(ListView类似)"
             android:textColor="#666666"
-            android:textSize="12sp" />
+            android:textSize="14sp" />
 
         <LinearLayout
             android:id="@+id/ll_recyclerview"
@@ -77,7 +77,7 @@
             android:paddingTop="10dp"
             android:text="1、正常带链接和@用户，没有展开和收回功能"
             android:textColor="#666666"
-            android:textSize="12sp" />
+            android:textSize="14sp" />
 
         <com.ctetin.expandabletextviewlibrary.ExpandableTextView
             android:id="@+id/ep_01"
@@ -99,7 +99,7 @@
             android:paddingTop="10dp"
             android:text="2、正常带链接，不带@用户，有展开和收回功能，有切换动画"
             android:textColor="#666666"
-            android:textSize="12sp" />
+            android:textSize="14sp" />
 
         <com.ctetin.expandabletextviewlibrary.ExpandableTextView
             android:id="@+id/ep_02"
@@ -125,7 +125,7 @@
             android:paddingTop="10dp"
             android:text="3、正常不带链接，不带@用户，有展开和收回功能，有切换动画"
             android:textColor="#666666"
-            android:textSize="12sp" />
+            android:textSize="14sp" />
 
         <com.ctetin.expandabletextviewlibrary.ExpandableTextView
             android:id="@+id/ep_03"
@@ -152,7 +152,7 @@
             android:paddingTop="10dp"
             android:text="4、正常带链接和@用户，有展开和收回功能，有切换动画"
             android:textColor="#666666"
-            android:textSize="12sp" />
+            android:textSize="14sp" />
 
         <com.ctetin.expandabletextviewlibrary.ExpandableTextView
             android:id="@+id/ep_04"
@@ -177,7 +177,7 @@
             android:paddingTop="10dp"
             android:text="5、正常带链接和@用户，有展开和收回功能，没有切换动画"
             android:textColor="#666666"
-            android:textSize="12sp" />
+            android:textSize="14sp" />
 
         <com.ctetin.expandabletextviewlibrary.ExpandableTextView
             android:id="@+id/ep_05"
@@ -202,7 +202,7 @@
             android:paddingTop="10dp"
             android:text="6、正常带链接和@用户，有展开，没有收回功能"
             android:textColor="#666666"
-            android:textSize="12sp" />
+            android:textSize="14sp" />
 
         <com.ctetin.expandabletextviewlibrary.ExpandableTextView
             android:id="@+id/ep_06"
@@ -227,7 +227,7 @@
             android:paddingTop="10dp"
             android:text="7、正常带链接和@用户，有展开，有收回功能，带附加内容(比如时间)"
             android:textColor="#666666"
-            android:textSize="12sp" />
+            android:textSize="14sp" />
 
         <com.ctetin.expandabletextviewlibrary.ExpandableTextView
             android:id="@+id/ep_07"
@@ -252,7 +252,7 @@
             android:paddingTop="10dp"
             android:text="8、正常带链接和@用户，有展开，没有收回功能，带附加内容(比如时间)"
             android:textColor="#666666"
-            android:textSize="12sp" />
+            android:textSize="14sp" />
 
         <com.ctetin.expandabletextviewlibrary.ExpandableTextView
             android:id="@+id/ep_08"
@@ -277,7 +277,7 @@
             android:paddingTop="10dp"
             android:text="9、正常带链接和@用户，有展开，有收回功能，有'展开'和'收起'始终靠右显示的功能"
             android:textColor="#666666"
-            android:textSize="12sp" />
+            android:textSize="14sp" />
 
         <com.ctetin.expandabletextviewlibrary.ExpandableTextView
             android:id="@+id/ep_09"
@@ -303,7 +303,7 @@
             android:paddingTop="10dp"
             android:text="10、正常带链接和@用户，有展开，有收回功能，带自定义规则（解析[标题](规则)并处理，例如对一些字段进行自定义处理，比如文字中的'--习大大' 和 'Gitbub地址'）"
             android:textColor="#666666"
-            android:textSize="12sp" />
+            android:textSize="14sp" />
 
         <com.ctetin.expandabletextviewlibrary.ExpandableTextView
             android:id="@+id/ep_10"
@@ -349,7 +349,7 @@
                     android:layout_height="wrap_content"
                     android:text="《段子乐》是一款集视频，趣图，段子于一身的社区APP"
                     android:textColor="#666666"
-                    android:textSize="12sp" />
+                    android:textSize="14sp" />
             </LinearLayout>
 
         </LinearLayout>

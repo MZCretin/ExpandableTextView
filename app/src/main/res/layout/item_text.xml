@@ -11,6 +11,8 @@
         android:lineSpacingExtra="4dp"
         android:padding="16dp"
         app:ep_need_contract="true"
+        android:textSize="12sp"
+        app:ep_need_always_showright="true"
         app:ep_need_expand="true" />
 
 </android.support.constraint.ConstraintLayout>
