@@ -2,6 +2,11 @@
  **实现类似微博内容，@用户，链接高亮，@用户和链接可点击跳转，可展开和收回的TextView。觉得好用别忘了star哦，你的star是对我最大的激励**
 
 ### 更新日志
++ 2018-10-09 17:20:45 更新，新增对展开和回收的点击事件监听，依赖版本请使用tag版本v1.5.2
+    ```
+    implementation 'com.github.MZCretin:ExpandableTextView:v1.5.2'
+    ```
+
 + 2018-09-28 09:37:28 更新，优化了将"展开"和"收回"固定最右显示时中间空格数量的计算方式，依赖版本请使用tag版本v1.5.1，[查看说明](#新特性额外说明)
     ```
     implementation 'com.github.MZCretin:ExpandableTextView:v1.5.1'

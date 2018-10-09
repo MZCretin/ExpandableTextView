@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import com.ctetin.expandabletextviewlibrary.ExpandableTextView;
 import com.ctetin.expandabletextviewlibrary.app.LinkType;
+import com.ctetin.expandabletextviewlibrary.app.StatusType;
 
 
 /**
@@ -41,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView[] tips;
     private String[] indexs = new String[]{
             "3,5;6,9;10,12",
-            "3,5;6,11;12,13;21,22",
+            "3,5;6,11;12,13;21,22;27,28",
             "2,6;7,12;13,14;22,23",
             "3,5;6,9;10,11;19,20",
             "3,5;6,9;10,11;19,21",
@@ -131,6 +132,14 @@ public class MainActivity extends AppCompatActivity {
         //2、正常带链接，不带@用户，有展开和收回功能，有切换动画
         views[1].setContent(yourText);
         views[1].setLinkClickListener(linkClickListener);
+        //添加展开和收回操作
+        views[1].setExpandOrContractClickListener(type -> {
+            if (type.equals(StatusType.STATUS_CONTRACT)) {
+                Toast.makeText(MainActivity.this, "收回操作", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(MainActivity.this, "展开操作", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         //3、正常不带链接，不带@用户，有展开和收回功能，有切换动画
         views[2].setContent(yourText);
@@ -174,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
          */
         if (d) {
             yourText = "    我所认识的中国，强大、友好，[--习大大](schema_jump_userinfo)。@奥特曼 “一带一路”经济带带动了沿线国家的经济发展，促进我国与他国的友好往来和贸易发展，可谓“双赢”，[Github地址](https://github.com/MZCretin/ExpandableTextView)。http://www.baidu.com 自古以来，中国以和平、友好的面孔示人。汉武帝派张骞出使西域，开辟丝绸之路，增进与西域各国的友好往来。http://www.baidu.com 胡麻、胡豆、香料等食材也随之传入中国，汇集于中华美食。@RNG 漠漠古道，驼铃阵阵，这条路奠定了“一带一路”的基础，让世界认识了中国。";
-        }else{
+        } else {
             tips[9].setText("10、正常带链接和@用户，有展开，有收回功能，带自定义规则");
             setTips();
         }

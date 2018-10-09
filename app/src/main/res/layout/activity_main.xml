@@ -97,7 +97,7 @@
             android:paddingLeft="15dp"
             android:paddingRight="15dp"
             android:paddingTop="10dp"
-            android:text="2、正常带链接，不带@用户，有展开和收回功能，有切换动画"
+            android:text="2、正常带链接，不带@用户，有展开和收回功能，有切换动画，有展开和回收的动作监听"
             android:textColor="#666666"
             android:textSize="14sp" />
 

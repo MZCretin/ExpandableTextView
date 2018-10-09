@@ -103,6 +103,11 @@ public class ExpandableTextView extends AppCompatTextView {
     private OnLinkClickListener linkClickListener;
 
     /**
+     * 展开或者收回事件监听
+     */
+    private OnExpandOrContractClickListener expandOrContractClickListener;
+
+    /**
      * 是否需要收起
      */
     private boolean mNeedContract = true;
@@ -425,6 +430,9 @@ public class ExpandableTextView extends AppCompatTextView {
                         } else {
                             action();
                         }
+                        if (expandOrContractClickListener != null) {
+                            expandOrContractClickListener.onClick(StatusType.STATUS_EXPAND);
+                        }
                     }
 
                     @Override
@@ -473,6 +481,9 @@ public class ExpandableTextView extends AppCompatTextView {
                                 action(mModel.getStatus());
                             } else {
                                 action();
+                            }
+                            if (expandOrContractClickListener != null) {
+                                expandOrContractClickListener.onClick(StatusType.STATUS_CONTRACT);
                             }
                         }
 
@@ -944,6 +955,10 @@ public class ExpandableTextView extends AppCompatTextView {
         void onLinkClickListener(LinkType type, String content, String selfContent);
     }
 
+    public interface OnExpandOrContractClickListener {
+        void onClick(StatusType type);
+    }
+
     public OnLinkClickListener getLinkClickListener() {
         return linkClickListener;
     }
@@ -1078,5 +1093,13 @@ public class ExpandableTextView extends AppCompatTextView {
 
     public void setNeedAlwaysShowRight(boolean mNeedAlwaysShowRight) {
         this.mNeedAlwaysShowRight = mNeedAlwaysShowRight;
+    }
+
+    public OnExpandOrContractClickListener getExpandOrContractClickListener() {
+        return expandOrContractClickListener;
+    }
+
+    public void setExpandOrContractClickListener(OnExpandOrContractClickListener expandOrContractClickListener) {
+        this.expandOrContractClickListener = expandOrContractClickListener;
     }
 }
