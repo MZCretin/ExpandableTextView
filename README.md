@@ -202,6 +202,14 @@
                 }
             }
         });
+        //添加展开和收回操作
+        expandableTextView.setExpandOrContractClickListener(type -> {
+            if (type.equals(StatusType.STATUS_CONTRACT)) {
+                Toast.makeText(MainActivity.this, "收回操作", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(MainActivity.this, "展开操作", Toast.LENGTH_SHORT).show();
+            }
+        });
 ```
 
 ### 新特性额外说明
