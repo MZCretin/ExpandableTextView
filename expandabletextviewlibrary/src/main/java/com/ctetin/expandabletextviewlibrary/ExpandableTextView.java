@@ -191,6 +191,9 @@ public class ExpandableTextView extends AppCompatTextView {
      */
     private int mEndExpandTextColor;
 
+    //是否AttachedToWindow
+    private boolean isAttached;
+
     public ExpandableTextView(Context context) {
         this(context, null);
     }
@@ -203,6 +206,19 @@ public class ExpandableTextView extends AppCompatTextView {
         super(context, attrs, defStyleAttr);
         init(context, attrs, defStyleAttr);
         setMovementMethod(LocalLinkMovementMethod.getInstance());
+        addOnAttachStateChangeListener(new OnAttachStateChangeListener() {
+            @Override
+            public void onViewAttachedToWindow(View v) {
+                if (isAttached == false)
+                    doSetContent();
+                isAttached = true;
+            }
+
+            @Override
+            public void onViewDetachedFromWindow(View v) {
+
+            }
+        });
     }
 
     private void init(Context context, AttributeSet attrs, int defStyleAttr) {
@@ -296,7 +312,17 @@ public class ExpandableTextView extends AppCompatTextView {
      */
     public void setContent(final String content) {
         mContent = content;
+        if (isAttached)
+            doSetContent();
+    }
 
+    /**
+     * 实际设置内容的
+     */
+    private void doSetContent() {
+        if (mContent == null) {
+            return;
+        }
         currentLines = mLimitLines;
 
         if (mWidth <= 0) {
@@ -312,11 +338,11 @@ public class ExpandableTextView extends AppCompatTextView {
                 @Override
                 public void run() {
                     retryTime++;
-                    setContent(content);
+                    setContent(mContent.toString());
                 }
             });
         } else {
-            setRealContent(content);
+            setRealContent(mContent.toString());
         }
     }
 

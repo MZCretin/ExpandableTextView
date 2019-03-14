@@ -2,13 +2,21 @@
  **实现类似微博内容，@用户，链接高亮，@用户和链接可点击跳转，可展开和收回的TextView。觉得好用别忘了star哦，你的star是对我最大的激励**
 
 ### 更新日志
+
++ 2019-03-14 10:25:57更新，修复在有些手机上偶尔会出现白屏，加载不出内容的情况，依赖版本请使用tag版本1.5.3
+
+  ```java
+  implementation 'com.github.MZCretin:ExpandableTextView:v1.5.3'
+  ```
+
 + 2018-10-09 17:20:45 更新，新增对展开和回收的点击事件监听，依赖版本请使用tag版本v1.5.2
-    ```
+
+    ```java
     implementation 'com.github.MZCretin:ExpandableTextView:v1.5.2'
     ```
 
 + 2018-09-28 09:37:28 更新，优化了将"展开"和"收回"固定最右显示时中间空格数量的计算方式，依赖版本请使用tag版本v1.5.1，[查看说明](#新特性额外说明)
-    ```
+    ```java
     implementation 'com.github.MZCretin:ExpandableTextView:v1.5.1'
     ```
 
@@ -17,19 +25,19 @@
     + 在demo中添加自定义设置显示文本的功能，您可以自己设置需要显示的文本，然后查看对应的显示效果；
     + 新增了"展开"和"收回"按钮始终居右的功能，具体效果请查看效果图的第9条，依赖版本请使用tag版本v1.5，[查看说明](#新特性额外说明)
 
-    ```
+    ```java
     implementation 'com.github.MZCretin:ExpandableTextView:v1.5'
     ```
 
 + 2018-09-22 23:32:16 更新，新增自定义规则解析，具体效果请查看效果图的第10条，依赖版本请使用tag版本v1.4，[查看说明](#新特性额外说明)
-    ```
+    ```java
     implementation 'com.github.MZCretin:ExpandableTextView:v1.4'
     ```
 
 + 2018-09-21 11:51:24 更新，优化了demo的代码逻辑和注释
 
 + 2018-09-21 08:45:13 更新，修复了自定义设置展开和收回内容无效的问题，依赖请使用tag版本v1.3.1
-    ```
+    ```java
     implementation 'com.github.MZCretin:ExpandableTextView:v1.3.1'
     ```
 
@@ -44,12 +52,13 @@
 + 2018-09-03 17:39:56 修复一些bug，链接sheSpan位置错误，未生成release，等待下次修复其他bug一起打tag依赖包，使用请本地依赖使用
 
 + 2018-08-31 17:31:56 优化设置padding对宽度造成的影响，依赖请使用tag版本v1.2
-    ```
+    ```java
     implementation 'com.github.MZCretin:ExpandableTextView:v1.2'
     ```
 
 + 2018-08-31 11:21:22 在V1.0的基础上进行了优化，依赖请使用tag版本v1.1
-    ```
+
+    ```java
     implementation 'com.github.MZCretin:ExpandableTextView:v1.1'
     ```
 
