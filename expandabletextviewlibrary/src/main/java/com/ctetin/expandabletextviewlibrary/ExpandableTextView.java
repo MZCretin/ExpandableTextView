@@ -232,7 +232,6 @@ public class ExpandableTextView extends AppCompatTextView {
     }
 
     private void init(Context context, AttributeSet attrs, int defStyleAttr) {
-
         //适配英文版
         TEXT_CONTRACT = context.getString(R.string.social_contract);
         TEXT_EXPEND = context.getString(R.string.social_expend);
