@@ -50,7 +50,8 @@ public class MainActivity extends AppCompatActivity {
             "3,5;6,9;10,11;14,15;20,21",
             "3,5;6,9;10,11;14,16;21,22",
             "3,5;6,9;10,11;14,15;20,21",
-            "4,6;7,10;11,12;15,16;21,22"
+            "4,6;7,10;11,12;15,16;21,22",
+            "4,6;7,10;11,12;15,16;24,29;40,45"
     };
 
     private TextView tvTips00;
@@ -66,8 +67,8 @@ public class MainActivity extends AppCompatActivity {
     };
 
     private void initView() {
-        views = new ExpandableTextView[10];
-        tips = new TextView[10];
+        views = new ExpandableTextView[11];
+        tips = new TextView[11];
         views[0] = findViewById(R.id.ep_01);
         views[1] = findViewById(R.id.ep_02);
         views[2] = findViewById(R.id.ep_03);
@@ -78,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
         views[7] = findViewById(R.id.ep_08);
         views[8] = findViewById(R.id.ep_09);
         views[9] = findViewById(R.id.ep_10);
+        views[10] = findViewById(R.id.ep_11);
         tips[0] = findViewById(R.id.tv_tips01);
         tips[1] = findViewById(R.id.tv_tips02);
         tips[2] = findViewById(R.id.tv_tips03);
@@ -88,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
         tips[7] = findViewById(R.id.tv_tips08);
         tips[8] = findViewById(R.id.tv_tips09);
         tips[9] = findViewById(R.id.tv_tips10);
+        tips[10] = findViewById(R.id.tv_tips11);
         tvTips00 = findViewById(R.id.tv_tips00);
     }
 
@@ -99,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
         initView();
 
         setTips();
-        String yourText = "    我所认识的中国，强大、友好 --习大大。@奥特曼 “一带一路”经济带带动了沿线国家的经济发展，促进我国与他国的友好往来和贸易发展，可谓“双赢”，Github地址。http://www.baidu.com 自古以来，中国以和平、友好的面孔示人。汉武帝派张骞出使西域，开辟丝绸之路，增进与西域各国的友好往来。http://www.baidu.com 胡麻、胡豆、香料等食材也随之传入中国，汇集于中华美食。@RNG 漠漠古道，驼铃阵阵，这条路奠定了“一带一路”的基础，让世界认识了中国。";
+        String yourText = "    我所认识的中国，http://www.baidu.com 强大、友好 --习大大。@奥特曼 “一带一路”经济带带动了沿线国家的经济发展，促进我国与他国的友好往来和贸易发展，可谓“双赢”，Github地址。 自古以来，中国以和平、友好的面孔示人。汉武帝派张骞出使西域，开辟丝绸之路，增进与西域各国的友好往来。http://www.baidu.com 胡麻、胡豆、香料等食材也随之传入中国，汇集于中华美食。@RNG 漠漠古道，驼铃阵阵，这条路奠定了“一带一路”的基础，让世界认识了中国。";
 //        String yourText = "1、哈哈\n2、哈哈\n3、哈哈\n4、哈哈\n5、哈哈\n6、哈哈\n7、哈哈\n8、哈哈\n9、哈哈\n1、哈哈";
 //        String yourText = "1\n2考虑\n3考虑\n4考虑\n5考虑\n6考虑";
 
@@ -181,16 +184,28 @@ public class MainActivity extends AppCompatActivity {
          * app:ep_need_self="true"
          * views[8].setNeedSelf(true);
          */
+        String yourText1 = "";
         if (d) {
-            yourText = "    我所认识的中国，强大、友好，[--习大大](schema_jump_userinfo)。@奥特曼 “一带一路”经济带带动了沿线国家的经济发展，促进我国与他国的友好往来和贸易发展，可谓“双赢”，[Github地址](https://github.com/MZCretin/ExpandableTextView)。http://www.baidu.com 自古以来，中国以和平、友好的面孔示人。汉武帝派张骞出使西域，开辟丝绸之路，增进与西域各国的友好往来。http://www.baidu.com 胡麻、胡豆、香料等食材也随之传入中国，汇集于中华美食。@RNG 漠漠古道，驼铃阵阵，这条路奠定了“一带一路”的基础，让世界认识了中国。";
+            yourText1 = "    我所认识的中国，强大、友好，[--习大大](schema_jump_userinfo)。[http://www.baidu.com](http://www.baidu.com)，@奥特曼 “一带一路”经济带带动了沿线国家的经济发展，促进我国与他国的友好往来和贸易发展，可谓“双赢”，[Github地址](https://github.com/MZCretin/ExpandableTextView)。http://www.baidu.com 自古以来，中国以和平、友好的面孔示人。汉武帝派张骞出使西域，开辟丝绸之路，增进与西域各国的友好往来。http://www.baidu.com 胡麻、胡豆、香料等食材也随之传入中国，汇集于中华美食。@RNG 漠漠古道，驼铃阵阵，这条路奠定了“一带一路”的基础，让世界认识了中国。";
         } else {
             tips[9].setText("10、正常带链接和@用户，有展开，有收回功能，带自定义规则");
             setTips();
         }
-        views[9].setContent(yourText);
+        views[9].setContent(yourText1);
         views[9].setLinkClickListener(linkClickListener);
         //需要先开启
         views[9].setNeedSelf(true);
+
+        //11、正常带链接和@用户，有展开，有收回功能，文本中链接不转换成网页链接的文本提示
+        views[10].setContent(yourText);
+        views[10].setLinkClickListener(linkClickListener);
+        //监听是否初始化完成 在这里可以获取是否支持展开/收回
+        views[10].setOnGetLineCountListener(new ExpandableTextView.OnGetLineCountListener() {
+            @Override
+            public void onGetLineCount(int lineCount, boolean canExpand) {
+                Toast.makeText(MainActivity.this, "行数：" + lineCount + "  是否满足展开条件：" + canExpand, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     /**

@@ -24,7 +24,9 @@ import android.text.method.Touch;
 import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.ImageSpan;
+import android.text.util.Linkify;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
@@ -33,10 +35,13 @@ import com.ctetin.expandabletextviewlibrary.app.LinkType;
 import com.ctetin.expandabletextviewlibrary.app.StatusType;
 import com.ctetin.expandabletextviewlibrary.model.ExpandableStatusFix;
 import com.ctetin.expandabletextviewlibrary.model.FormatData;
+import com.ctetin.expandabletextviewlibrary.model.UUIDUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -118,6 +123,11 @@ public class ExpandableTextView extends AppCompatTextView {
      * 是否需要展开功能
      */
     private boolean mNeedExpend = true;
+
+    /**
+     * 是否需要转换url成网页链接四个字
+     */
+    private boolean mNeedConvertUrl = true;
 
     /**
      * 是否需要@用户的功能
@@ -241,6 +251,7 @@ public class ExpandableTextView extends AppCompatTextView {
             mNeedMention = a.getBoolean(R.styleable.ExpandableTextView_ep_need_mention, true);
             mNeedLink = a.getBoolean(R.styleable.ExpandableTextView_ep_need_link, true);
             mNeedAlwaysShowRight = a.getBoolean(R.styleable.ExpandableTextView_ep_need_always_showright, false);
+            mNeedConvertUrl = a.getBoolean(R.styleable.ExpandableTextView_ep_need_convert_url, true);
             mContractString = a.getString(R.styleable.ExpandableTextView_ep_contract_text);
             mExpandString = a.getString(R.styleable.ExpandableTextView_ep_expand_text);
             if (TextUtils.isEmpty(mExpandString)) {
@@ -287,6 +298,10 @@ public class ExpandableTextView extends AppCompatTextView {
                         true);
         //获取行数
         mLineCount = mDynamicLayout.getLineCount();
+
+        if (onGetLineCountListener != null) {
+            onGetLineCountListener.onGetLineCount(mLineCount, mLineCount > mLimitLines);
+        }
 
         if (!mNeedExpend || mLineCount <= mLimitLines) {
             //不需要展开功能 直接处理链接模块
@@ -800,6 +815,7 @@ public class ExpandableTextView extends AppCompatTextView {
         int start = 0;
         int end = 0;
         int temp = 0;
+        Map<String, String> convert = new HashMap<>();
         //对自定义的进行正则匹配
         if (mNeedSelf) {
             List<FormatData.PositionData> datasMention = new ArrayList<>();
@@ -813,8 +829,10 @@ public class ExpandableTextView extends AppCompatTextView {
                     //解析数据
                     String aimSrt = result.substring(result.indexOf("[") + 1, result.indexOf("]"));
                     String contentSrt = result.substring(result.indexOf("(") + 1, result.indexOf(")"));
+                    String key = UUIDUtils.getUuid(aimSrt.length());
                     datasMention.add(new FormatData.PositionData(newResult.length() + 1, newResult.length() + 2 + aimSrt.length(), aimSrt, contentSrt, LinkType.SELF));
-                    newResult.append(" " + aimSrt + " ");
+                    convert.put(key, aimSrt);
+                    newResult.append(" " + key + " ");
                     temp = end;
                 }
             }
@@ -835,9 +853,17 @@ public class ExpandableTextView extends AppCompatTextView {
                 start = matcher.start();
                 end = matcher.end();
                 newResult.append(content.toString().substring(temp, start));
-                //将匹配到的内容进行统计处理
-                datas.add(new FormatData.PositionData(newResult.length() + 1, newResult.length() + 2 + TARGET.length(), matcher.group(), LinkType.LINK_TYPE));
-                newResult.append(" " + TARGET + " ");
+                if (mNeedConvertUrl) {
+                    //将匹配到的内容进行统计处理
+                    datas.add(new FormatData.PositionData(newResult.length() + 1, newResult.length() + 2 + TARGET.length(), matcher.group(), LinkType.LINK_TYPE));
+                    newResult.append(" " + TARGET + " ");
+                } else {
+                    String result = matcher.group();
+                    String key = UUIDUtils.getUuid(result.length());
+                    datas.add(new FormatData.PositionData(newResult.length(), newResult.length() + 2 + key.length(), result, LinkType.LINK_TYPE));
+                    convert.put(key, result);
+                    newResult.append(" " + key + " ");
+                }
                 temp = end;
             }
         }
@@ -853,7 +879,13 @@ public class ExpandableTextView extends AppCompatTextView {
             }
             datas.addAll(0, datasMention);
         }
-
+        if (!convert.isEmpty()) {
+            String resultData = newResult.toString();
+            for (Map.Entry<String, String> entry : convert.entrySet()) {
+                resultData = resultData.replaceAll(entry.getKey(), entry.getValue());
+            }
+            newResult = new StringBuffer(resultData);
+        }
         formatData.setFormatedContent(newResult.toString());
         formatData.setPositionDatas(datas);
         return formatData;
@@ -979,6 +1011,24 @@ public class ExpandableTextView extends AppCompatTextView {
 
     public interface OnLinkClickListener {
         void onLinkClickListener(LinkType type, String content, String selfContent);
+    }
+
+    public interface OnGetLineCountListener {
+        /**
+         * lineCount 预估可能占有的行数
+         * canExpand 是否达到可以展开的条件
+         */
+        void onGetLineCount(int lineCount, boolean canExpand);
+    }
+
+    private OnGetLineCountListener onGetLineCountListener;
+
+    public OnGetLineCountListener getOnGetLineCountListener() {
+        return onGetLineCountListener;
+    }
+
+    public void setOnGetLineCountListener(OnGetLineCountListener onGetLineCountListener) {
+        this.onGetLineCountListener = onGetLineCountListener;
     }
 
     public interface OnExpandOrContractClickListener {

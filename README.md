@@ -3,10 +3,12 @@
 
 ### 更新日志
 
++ 2019-05-20 15:14:04更新，如果你需要展示链接但是不想让链接自动转换成"网页链接"的形式，你可以禁用自动转换功能；如果你希望知道是否满足展开/收起的条件，添加一个监听就好了，依赖版本请使用tag版本1.6.0
+
 + 2019-03-14 10:25:57更新，修复在有些手机上偶尔会出现白屏，加载不出内容的情况，依赖版本请使用tag版本1.5.3
 
   ```java
-  implementation 'com.github.MZCretin:ExpandableTextView:v1.5.3'
+  implementation 'com.github.MZCretin:ExpandableTextView:v1.6.0'
   ```
 
 + 2018-10-09 17:20:45 更新，新增对展开和回收的点击事件监听，依赖版本请使用tag版本v1.5.2
@@ -21,6 +23,7 @@
     ```
 
 + 2018-09-27 09:18:14 更新
+
     + 修复了不添加事件监听，点击链接会直接打开百度页面；
     + 在demo中添加自定义设置显示文本的功能，您可以自己设置需要显示的文本，然后查看对应的显示效果；
     + 新增了"展开"和"收回"按钮始终居右的功能，具体效果请查看效果图的第9条，依赖版本请使用tag版本v1.5，[查看说明](#新特性额外说明)
@@ -64,7 +67,7 @@
 
 ### 实现效果：
 
- <img src="./extra/demo.png"/>
+ <img src="./extra/demo.jpg"/>
 
 #### 下面是RecyclerView中的样式，可以保留之前展开和收回的状态
 
@@ -116,6 +119,8 @@
         <attr name="ep_need_link" format="boolean" />
         <!--是否需要动画-->
         <attr name="ep_need_animation" format="boolean" />
+				<!--是否需要将连接转换成网页链接显示 默认为true-->
+        <attr name="ep_need_convert_url" format="boolean" />
         <!--是否需要自定义规则-->
         <attr name="ep_need_self" format="boolean" />
         <!--收起的文案-->
@@ -173,6 +178,8 @@
                     app:ep_contract_color="@color/colorAccent"
                     <!--@用户的文字的颜色-->
                     app:ep_mention_color="@color/colorAccent"
+										<!--是否需要将连接转换成网页链接显示-->
+										app:ep_need_convert_url="false"
                     <!--是否需要自定义规则-->
                     app:ep_need_self="true"
                     <!--自定义规则的文字的颜色-->
@@ -219,9 +226,30 @@
                 Toast.makeText(MainActivity.this, "展开操作", Toast.LENGTH_SHORT).show();
             }
         });
+				//监听是否初始化完成 在这里可以获取是否支持展开/收回
+        expandableTextView.setOnGetLineCountListener(new ExpandableTextView.OnGetLineCountListener() {
+            @Override
+            public void onGetLineCount(int lineCount, boolean canExpand) {
+                Toast.makeText(MainActivity.this, "行数：" + lineCount + "  是否满足展开条件：" + canExpand, Toast.LENGTH_SHORT).show();
+            }
+        });
 ```
 
 ### 新特性额外说明
+
+### V1.6:2019-05-20 15:19:10 更新了如下特性 版本v1.6+可以正常使用
+
+如果你需要展示链接但是不想让链接自动转换成"网页链接"的形式，你可以禁用自动转换功能，具体效果可以参考效果图第11条；如果你希望知道是否满足展开/收起的条件，添加一个监听就好了：
+
+```java
+//监听是否初始化完成 在这里可以获取是否支持展开/收回
+        views[10].setOnGetLineCountListener(new ExpandableTextView.OnGetLineCountListener() {
+            @Override
+            public void onGetLineCount(int lineCount, boolean canExpand) {
+                Toast.makeText(MainActivity.this, "行数：" + lineCount + "  是否满足展开条件：" + canExpand, Toast.LENGTH_SHORT).show();
+            }
+        });
+```
 
 ### V1.5: 2018-09-27 09:20:28 更新了如下特性 版本v1.5+可以正常使用
 如果你需要将"展开"和"收回"始终居右显示，你需要开启它，具体效果可以参考效果图第9条
