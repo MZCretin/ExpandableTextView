@@ -5,10 +5,14 @@
 
 + 2019-05-20 15:14:04更新，如果你需要展示链接但是不想让链接自动转换成"网页链接"的形式，你可以禁用自动转换功能；如果你希望知道是否满足展开/收起的条件，添加一个监听就好了，依赖版本请使用tag版本1.6.0
 
+  ```java
+  implementation 'com.github.MZCretin:ExpandableTextView:v1.6.0'
+  ```
+
 + 2019-03-14 10:25:57更新，修复在有些手机上偶尔会出现白屏，加载不出内容的情况，依赖版本请使用tag版本1.5.3
 
   ```java
-  implementation 'com.github.MZCretin:ExpandableTextView:v1.6.0'
+  implementation 'com.github.MZCretin:ExpandableTextView:v1.5.3'
   ```
 
 + 2018-10-09 17:20:45 更新，新增对展开和回收的点击事件监听，依赖版本请使用tag版本v1.5.2
@@ -33,6 +37,7 @@
     ```
 
 + 2018-09-22 23:32:16 更新，新增自定义规则解析，具体效果请查看效果图的第10条，依赖版本请使用tag版本v1.4，[查看说明](#新特性额外说明)
+
     ```java
     implementation 'com.github.MZCretin:ExpandableTextView:v1.4'
     ```
