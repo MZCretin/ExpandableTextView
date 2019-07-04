@@ -113,6 +113,18 @@
             app:ep_need_expand="true"
             app:ep_need_mention="false" />
 
+        <com.ctetin.expandabletextviewlibrary.ExpandableTextView
+            android:id="@+id/ep_12"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:lineSpacingExtra="4dp"
+            android:textSize="14sp"
+            app:ep_max_line="5"
+            app:ep_need_contract="true"
+            app:ep_need_expand="true"
+            app:ep_need_mention="false" />
+
         <TextView
             android:id="@+id/tv_tips03"
             android:layout_width="match_parent"

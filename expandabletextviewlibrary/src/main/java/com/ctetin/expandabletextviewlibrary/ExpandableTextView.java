@@ -108,6 +108,11 @@ public class ExpandableTextView extends AppCompatTextView {
     private OnLinkClickListener linkClickListener;
 
     /**
+     * 点击展开或者收回按钮的时候 是否真的执行操作
+     */
+    private boolean needRealExpandOrContract = true;
+
+    /**
      * 展开或者收回事件监听
      */
     private OnExpandOrContractClickListener expandOrContractClickListener;
@@ -464,11 +469,13 @@ public class ExpandableTextView extends AppCompatTextView {
                 ssb.setSpan(new ClickableSpan() {
                     @Override
                     public void onClick(View widget) {
-                        if (mModel != null) {
-                            mModel.setStatus(StatusType.STATUS_CONTRACT);
-                            action(mModel.getStatus());
-                        } else {
-                            action();
+                        if (needRealExpandOrContract) {
+                            if (mModel != null) {
+                                mModel.setStatus(StatusType.STATUS_CONTRACT);
+                                action(mModel.getStatus());
+                            } else {
+                                action();
+                            }
                         }
                         if (expandOrContractClickListener != null) {
                             expandOrContractClickListener.onClick(StatusType.STATUS_EXPAND);
@@ -1176,5 +1183,10 @@ public class ExpandableTextView extends AppCompatTextView {
 
     public void setExpandOrContractClickListener(OnExpandOrContractClickListener expandOrContractClickListener) {
         this.expandOrContractClickListener = expandOrContractClickListener;
+    }
+
+    public void setExpandOrContractClickListener(OnExpandOrContractClickListener expandOrContractClickListener, boolean needRealExpandOrContract) {
+        this.expandOrContractClickListener = expandOrContractClickListener;
+        this.needRealExpandOrContract = needRealExpandOrContract;
     }
 }

@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
     };
 
     private void initView() {
-        views = new ExpandableTextView[11];
+        views = new ExpandableTextView[12];
         tips = new TextView[11];
         views[0] = findViewById(R.id.ep_01);
         views[1] = findViewById(R.id.ep_02);
@@ -80,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
         views[8] = findViewById(R.id.ep_09);
         views[9] = findViewById(R.id.ep_10);
         views[10] = findViewById(R.id.ep_11);
+        views[11] = findViewById(R.id.ep_12);
         tips[0] = findViewById(R.id.tv_tips01);
         tips[1] = findViewById(R.id.tv_tips02);
         tips[2] = findViewById(R.id.tv_tips03);
@@ -135,6 +136,8 @@ public class MainActivity extends AppCompatActivity {
         //2、正常带链接，不带@用户，有展开和收回功能，有切换动画
         views[1].setContent(yourText);
         views[1].setLinkClickListener(linkClickListener);
+        views[11].setContent(yourText);
+        views[11].setLinkClickListener(linkClickListener);
         //添加展开和收回操作
         views[1].setExpandOrContractClickListener(type -> {
             if (type.equals(StatusType.STATUS_CONTRACT)) {
@@ -143,6 +146,14 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "展开操作", Toast.LENGTH_SHORT).show();
             }
         });
+        //添加展开和收回操作 只触发点击 不真正触发展开和收回操作
+        views[11].setExpandOrContractClickListener(type -> {
+            if (type.equals(StatusType.STATUS_CONTRACT)) {
+                Toast.makeText(MainActivity.this, "收回操作，不真正触发收回操作", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(MainActivity.this, "展开操作，不真正触发展开操作", Toast.LENGTH_SHORT).show();
+            }
+        },false);
 
         //3、正常不带链接，不带@用户，有展开和收回功能，有切换动画
         views[2].setContent(yourText);
