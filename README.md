@@ -3,7 +3,13 @@
 
 ### 更新日志
 
-+ 2019-05-20 15:14:04更新，如果你需要展示链接但是不想让链接自动转换成"网页链接"的形式，你可以禁用自动转换功能；如果你希望知道是否满足展开/收起的条件，添加一个监听就好了，依赖版本请使用tag版本1.6.0
++ 2019-07-04 12:06:06更新，如果你需要监听展开和回收的时间监听，但是不需要控件真正的执行展开和回收操作，你可以在添加展开和收回操作的时候置顶是否需要真正执行展开和回收操作，具体效果可以参考效果图第2条的第二个，依赖版本请使用tag版本v1.6.1,[查看说明](#V1.6.1:2019-07-04 12:02:05 更新了如下特性 版本v1.6.1+可以正常使用)
+
+  ```java
+  implementation 'com.github.MZCretin:ExpandableTextView:v1.6.1'
+  ```
+
++ 2019-05-20 15:14:04更新，如果你需要展示链接但是不想让链接自动转换成"网页链接"的形式，你可以禁用自动转换功能；如果你希望知道是否满足展开/收起的条件，添加一个监听就好了，依赖版本请使用tag版本1.6.0,[查看说明](#V1.6:2019-05-20 15:19:10 更新了如下特性 版本v1.6+可以正常使用)
 
   ```java
   implementation 'com.github.MZCretin:ExpandableTextView:v1.6.0'
@@ -22,6 +28,7 @@
     ```
 
 + 2018-09-28 09:37:28 更新，优化了将"展开"和"收回"固定最右显示时中间空格数量的计算方式，依赖版本请使用tag版本v1.5.1，[查看说明](#新特性额外说明)
+
     ```java
     implementation 'com.github.MZCretin:ExpandableTextView:v1.5.1'
     ```
@@ -238,9 +245,32 @@
                 Toast.makeText(MainActivity.this, "行数：" + lineCount + "  是否满足展开条件：" + canExpand, Toast.LENGTH_SHORT).show();
             }
         });
+				//添加展开和收回操作 只触发点击 不真正触发展开和收回操作
+        expandableTextView.setExpandOrContractClickListener(type -> {
+            if (type.equals(StatusType.STATUS_CONTRACT)) {
+                Toast.makeText(MainActivity.this, "收回操作，不真正触发收回操作", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(MainActivity.this, "展开操作，不真正触发展开操作", Toast.LENGTH_SHORT).show();
+            }
+        },false);
 ```
 
 ### 新特性额外说明
+
+### V1.6.1:2019-07-04 12:02:05 更新了如下特性 版本v1.6.1+可以正常使用
+
+如果你需要监听展开和回收的时间监听，但是不需要控件真正的执行展开和回收操作，你可以在添加展开和收回操作的时候置顶是否需要真正执行展开和回收操作，具体效果可以参考效果图第2条的第二个控件效果：
+
+```java
+//添加展开和收回操作 只触发点击 不真正触发展开和收回操作
+        expandableTextView.setExpandOrContractClickListener(type -> {
+            if (type.equals(StatusType.STATUS_CONTRACT)) {
+                Toast.makeText(MainActivity.this, "收回操作，不真正触发收回操作", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(MainActivity.this, "展开操作，不真正触发展开操作", Toast.LENGTH_SHORT).show();
+            }
+        },false);
+```
 
 ### V1.6:2019-05-20 15:19:10 更新了如下特性 版本v1.6+可以正常使用
 
