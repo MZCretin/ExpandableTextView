@@ -5,10 +5,14 @@
 
 Gradle:
 
+```
 implementation 'com.github.MZCretin:ExpandableTextView:v1.6.1'
+```
 
 // if u use AndroidX, use the following
+```
 implementation 'com.github.MZCretin:ExpandableTextView:v1.6.1-x'
+```
 
 ### 更新日志
 
