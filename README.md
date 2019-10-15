@@ -1,6 +1,15 @@
 # ExpandableTextView
  **实现类似微博内容，@用户，链接高亮，@用户和链接可点击跳转，可展开和收回的TextView。觉得好用别忘了star哦，你的star是对我最大的激励**
 
+### 快速使用
+
+Gradle:
+
+implementation 'com.github.MZCretin:ExpandableTextView:v1.6.1'
+
+// if u use AndroidX, use the following
+implementation 'com.github.MZCretin:ExpandableTextView:v1.6.1-x'
+
 ### 更新日志
 
 + 2019-07-04 12:06:06更新，如果你需要监听展开和回收的时间监听，但是不需要控件真正的执行展开和回收操作，你可以在添加展开和收回操作的时候置顶是否需要真正执行展开和回收操作，具体效果可以参考效果图第2条的第二个，依赖版本请使用tag版本v1.6.1,[查看说明](#v1612019-07-04-120205-更新了如下特性-版本v161可以正常使用)
