@@ -24,9 +24,7 @@ import android.text.method.Touch;
 import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.ImageSpan;
-import android.text.util.Linkify;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
@@ -623,8 +621,12 @@ public class ExpandableTextView extends AppCompatTextView {
         //清除链接点击时背景效果
         setHighlightColor(Color.TRANSPARENT);
         //将内容设置到控件中
-        setText(ssb);
+        setFinalText(ssb);
         return ssb;
+    }
+
+    public void setFinalText(@NonNull SpannableStringBuilder ssb) {
+        setText(ssb);
     }
 
     /**
