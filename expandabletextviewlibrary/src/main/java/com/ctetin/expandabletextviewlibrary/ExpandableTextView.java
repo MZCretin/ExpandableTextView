@@ -9,9 +9,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.AppCompatTextView;
 import android.text.DynamicLayout;
 import android.text.Layout;
 import android.text.Selection;
@@ -28,6 +25,10 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatTextView;
 
 import com.ctetin.expandabletextviewlibrary.app.LinkType;
 import com.ctetin.expandabletextviewlibrary.app.StatusType;
@@ -621,8 +622,12 @@ public class ExpandableTextView extends AppCompatTextView {
         //清除链接点击时背景效果
         setHighlightColor(Color.TRANSPARENT);
         //将内容设置到控件中
-        setText(ssb);
+        setFinalText(ssb);
         return ssb;
+    }
+
+    public void setFinalText(@NonNull SpannableStringBuilder ssb) {
+        setText(ssb);
     }
 
     /**
