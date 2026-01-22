@@ -888,7 +888,12 @@ public class ExpandableTextView extends AppCompatTextView {
         if (!convert.isEmpty()) {
             String resultData = newResult.toString();
             for (Map.Entry<String, String> entry : convert.entrySet()) {
-                resultData = resultData.replaceAll(entry.getKey(), entry.getValue());
+                //字符串中含有反斜杠 (/) 和美元符号 ($)
+                if (entry.getValue().contains("$") || entry.getValue().contains("/")) {
+                    resultData = resultData.replaceAll(entry.getKey(), Matcher.quoteReplacement(entry.getValue()));
+                } else {
+                    resultData = resultData.replaceAll(entry.getKey(), entry.getValue());
+                }
             }
             newResult = new StringBuffer(resultData);
         }
